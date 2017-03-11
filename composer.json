@@ -1,0 +1,18 @@
+{
+    "name": "john/frame",
+    "description": "Sample FW",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Evgeniy Kozenok",
+            "email": "kozenokevgeniy@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+      "psr-4": {
+        "john\\frame\\": "src"
+      }
+    }
+}
