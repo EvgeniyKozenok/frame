@@ -1,6 +1,7 @@
 <?php
 
 namespace john\frame;
+use john\frame\Request\Request;
 
 /**
  * Class Application
@@ -28,7 +29,7 @@ class Application
      */
     public function start()
     {
-        $this->debug($this->config);
+        $this->debug($request = Request::getRequest());
     }
 
     /**
