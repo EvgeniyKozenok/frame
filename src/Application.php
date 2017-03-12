@@ -1,7 +1,7 @@
 <?php
 
 namespace john\frame;
-use john\frame\Exceptions\RouteNotFoundException;
+use john\frame\Exceptions\Route\RouteException;
 use john\frame\Logger\Logger;
 use john\frame\Request\Request;
 use john\frame\Router\Router;
@@ -43,10 +43,11 @@ class Application
         $logger = Logger::getLogger('root', 'logger.log');
         $request = Request::getRequest();
         $this->debug($_SERVER);
-        $router = new Router($this->config);
         try {
-            $this->debug($router->getRoute($request));
-        } catch (RouteNotFoundException $e) {
+            $router = new Router($this->config);
+            $link = $router->getLink("get_one_good", ['name' => "test", 'id' => 10, 'test_param' => '123e']);
+            echo "$link <br />";
+        } catch (RouteException $e) {
             $logger->log($e->getMessage());
         }
     }
