@@ -46,6 +46,7 @@ class Application
             $this->debug($router = new Router($this->config));
             $this->debug($route = $router->getRoute($request));
             $this->debug($link = $router->getLink("get_one_good", ['name' => "test", 'id' => 10, 'test_param' => '123e']));
+            $this->debug($request->getQueryParams('test', 'title', 'aaa'));
         } catch (RouteException $e) {
             $logger->log($e->getMessage());
         }
