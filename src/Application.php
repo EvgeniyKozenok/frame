@@ -48,8 +48,8 @@ class Application
             $route = $router->getRoute($request);
             $this->debug($route_controller = $route->getController());
             $this->debug($route_method = $route->getMethod());
-            echo dirname(__FILE__) . DIRECTORY_SEPARATOR . $route_controller;
             if (class_exists($route_controller)) {
+                echo "ok";
                 $reflectionClass = new \ReflectionClass($route_controller);
                 if ($reflectionClass->hasMethod($route_method)) {
                     $controller = $reflectionClass->newInstance();
