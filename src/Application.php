@@ -42,11 +42,10 @@ class Application
         Logger::$PATH = $this->log_dir;
         $logger = Logger::getLogger('root', 'logger.log');
         $request = Request::getRequest();
-        $this->debug($_SERVER);
         try {
-            $router = new Router($this->config);
-            $link = $router->getLink("get_one_good", ['name' => "test", 'id' => 10, 'test_param' => '123e']);
-            echo "$link <br />";
+            $this->debug($router = new Router($this->config));
+            $this->debug($route = $router->getRoute($request));
+            $this->debug($link = $router->getLink("get_one_good", ['name' => "test", 'id' => 10, 'test_param' => '123e']));
         } catch (RouteException $e) {
             $logger->log($e->getMessage());
         }

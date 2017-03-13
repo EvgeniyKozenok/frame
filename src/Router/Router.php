@@ -39,7 +39,7 @@ class Router
             $variables = isset($value[self::VARIABLES]) ? $value[self::VARIABLES] : null;
             $this->routes[$item] = [
                 self::REGEXP => "/" . $this->getRegexpFromRoute($value[self::PATTERN], $variables, $existed_variables) . "/",
-                self::METHOD => isset($value[self::METHOD]) ? $value[self::METHOD] : ($value[self::METHOD] != null) ? $value[self::METHOD] : "GET",
+                self::METHOD => isset($value[self::METHOD]) && ($value[self::METHOD] != '') ? $value[self::METHOD] : "GET",
                 self::CONTROLLER_NAME => $this->getController($value[self::ACTION]),
                 self::CONTROLLER_METHOD => $this->getController($value[self::ACTION], 1),
                 self::VARIABLES => $existed_variables
@@ -130,7 +130,7 @@ class Router
      * @throws InvalidRouteNameException
      * @throws RouteNotKeyException
      */
-    public function getLink(string $route_name = 'name', array $params = []): string
+    public function getLink(string $route_name, array $params = []): string
     {
         if (array_key_exists($route_name, $this->routes)) {
             $link = $this->routes[$route_name][self::REGEXP];

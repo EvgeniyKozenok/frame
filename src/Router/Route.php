@@ -38,7 +38,6 @@ class Route
         $this->controller = $controller;
         $this->method = $method;
         $this->params = $params;
-        echo "You route: <hr />";
     }
 
 }
