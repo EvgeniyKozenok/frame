@@ -37,7 +37,6 @@ class Request
                 $this->headers[$param] = $value;
             }
         }
-        var_dump($this->headers);
     }
 
 

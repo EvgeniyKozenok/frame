@@ -4,6 +4,7 @@ namespace john\frame;
 use john\frame\Exceptions\Route\RouteException;
 use john\frame\Logger\Logger;
 use john\frame\Request\Request;
+use john\frame\Response\Response;
 use john\frame\Router\Router;
 
 /**
@@ -41,12 +42,27 @@ class Application
             mkdir($this->log_dir);
         Logger::$PATH = $this->log_dir;
         $logger = Logger::getLogger('root', 'logger.log');
-        $request = Request::getRequest();
         try {
-            $this->debug($router = new Router($this->config));
-            $this->debug($route = $router->getRoute($request));
-            $this->debug($link = $router->getLink("get_one_good", ['name' => "test", 'id' => 10, 'test_param' => '123e']));
-            $this->debug($request->getQueryParams('test', 'title', 'aaa'));
+            $request = Request::getRequest();
+            $router = new Router($this->config);
+            $route = $router->getRoute($request);
+            $this->debug($route_controller = $route->getController());
+            $this->debug($route_method = $route->getMethod());
+            echo dirname(__FILE__) . DIRECTORY_SEPARATOR . $route_controller;
+            if (class_exists($route_controller)) {
+                $reflectionClass = new \ReflectionClass($route_controller);
+                if ($reflectionClass->hasMethod($route_method)) {
+                    $controller = $reflectionClass->newInstance();
+                    $reflectionMethod = $reflectionClass->getMethod($route_method);
+                    $response = $reflectionMethod->invokeArgs($controller, $route->getParams());
+                    if ($response instanceof Response) {
+                        $response->send();
+                    }
+                }
+            }
+            $link = $router->getLink("get_one_good", ['name' => "test", 'id' => 10, 'test_param' => '123e']);
+            $request->getQueryParams('test', 'title', 'aaa');
+
         } catch (RouteException $e) {
             $logger->log($e->getMessage());
         }
