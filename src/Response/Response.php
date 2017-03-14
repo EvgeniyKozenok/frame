@@ -24,6 +24,7 @@ class Response
         '404' => 'Not found',
         '500' => 'Server error'
     ];
+
     /**
      * @var array
      */
@@ -44,6 +45,7 @@ class Response
         $this->code = $code;
         $this->addHeader('Content-Type','text/html');
     }
+
     /**
      * Add header
      *
@@ -53,12 +55,14 @@ class Response
     public function addHeader($key, $value){
         $this->headers[$key] = $value;
     }
+
     /**
      * @param $content
      */
     public function setPlayLoad($content){
         $this->playLoad = $content;
     }
+
     /**
      * Send response
      */
@@ -67,6 +71,7 @@ class Response
         $this->sendBody();
         exit();
     }
+
     /**
      * Send headers
      */
@@ -78,8 +83,9 @@ class Response
             }
         }
     }
+
     /**
-     * Send response playload
+     * Send response playLoad
      */
     public function sendBody(){
         echo $this->playLoad;

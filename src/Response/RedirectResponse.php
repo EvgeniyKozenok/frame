@@ -23,6 +23,5 @@ class RedirectResponse extends Response
      * Send body override
      */
     public function sendBody(){
-        // Do nothing;
     }
 }

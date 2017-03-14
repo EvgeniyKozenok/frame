@@ -13,11 +13,19 @@ class Request
      * @var null
      */
     private static $request = null;
+
     /**
      * array request headers
      * @var array
      */
     private $headers = [];
+
+    /**
+     * array request data
+     * @var array
+     */
+    private $requestData = [];
+
     /**
      * array request query string params
      * @var array
@@ -35,10 +43,10 @@ class Request
             if (substr($param, 0, 5) === "HTTP_") {
                 $param = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($param, 5)))));
                 $this->headers[$param] = $value;
-            }
+            } else
+                $this->requestData[$param] = $value;
         }
     }
-
 
     private function __clone()
     {

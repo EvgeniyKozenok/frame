@@ -42,14 +42,13 @@ class Application
             mkdir($this->log_dir);
         Logger::$PATH = $this->log_dir;
         $logger = Logger::getLogger('root', 'logger.log');
+        $request = Request::getRequest();
         try {
-            $request = Request::getRequest();
             $router = new Router($this->config);
             $route = $router->getRoute($request);
-            $this->debug($route_controller = $route->getController());
-            $this->debug($route_method = $route->getMethod());
+            $route_controller = $route->getController();
+            $route_method = $route->getMethod();
             if (class_exists($route_controller)) {
-                echo "ok";
                 $reflectionClass = new \ReflectionClass($route_controller);
                 if ($reflectionClass->hasMethod($route_method)) {
                     $controller = $reflectionClass->newInstance();
@@ -62,9 +61,10 @@ class Application
             }
             $link = $router->getLink("get_one_good", ['name' => "test", 'id' => 10, 'test_param' => '123e']);
             $request->getQueryParams('test', 'title', 'aaa');
-
         } catch (RouteException $e) {
             $logger->log($e->getMessage());
+            header($request->getData('SERVER_PROTOCOL') . " 404 Not Found");
+
         }
     }
 
