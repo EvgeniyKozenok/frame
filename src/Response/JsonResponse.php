@@ -22,6 +22,6 @@ class JsonResponse extends Response
      * Send content to the client
      */
     public function sendBody(){
-        echo json_encode($this->playload);
+        echo json_encode($this->content);
     }
 }

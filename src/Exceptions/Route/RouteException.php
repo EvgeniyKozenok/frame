@@ -3,7 +3,7 @@
 namespace john\frame\Exceptions\Route;
 
 /**
- * Routes Exception class
+ * Exception for routes
  * Class RouteException
  * @package john\frame\Exceptions\Route
  */

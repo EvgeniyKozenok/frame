@@ -8,10 +8,7 @@ namespace john\frame\Response;
  */
 class Response
 {
-    /**
-     * @var int Response code
-     */
-    public $code = 200;
+
     /**
      * HTTP Status messages
      */
@@ -26,24 +23,38 @@ class Response
     ];
 
     /**
-     * @var array
+     * @var int Response code
+     */
+    public $code = 200;
+    /**
+     * @var string response content
+     */
+    protected $content = '';
+
+    /**
+     * @var array response headers
      */
     protected $headers = [];
-    /**
-     * @var string
-     */
-    protected $playLoad = '';
+
 
     /**
      * Response constructor.
      * @param $content
      * @param int $code
      */
-    public function __construct($content, $code = 200)
+    public function __construct($content = '', $code = 200)
     {
-        $this->setPlayLoad($content);
+        $this->content = $content;
         $this->code = $code;
         $this->addHeader('Content-Type','text/html');
+    }
+
+    /**
+     * @param mixed $content
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
     }
 
     /**
@@ -54,13 +65,6 @@ class Response
      */
     public function addHeader($key, $value){
         $this->headers[$key] = $value;
-    }
-
-    /**
-     * @param $content
-     */
-    public function setPlayLoad($content){
-        $this->playLoad = $content;
     }
 
     /**
@@ -88,6 +92,6 @@ class Response
      * Send response playLoad
      */
     public function sendBody(){
-        echo $this->playLoad;
+        echo $this->content;
     }
 }

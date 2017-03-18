@@ -4,4 +4,6 @@ public/
 config/
 vendor/
 logs/
-Controller/
+TestController/
+views/
+cache/

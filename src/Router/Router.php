@@ -3,6 +3,7 @@
 namespace john\frame\Router;
 
 
+use john\frame\Exceptions\Config\UndefDataException;
 use john\frame\Exceptions\Route\InvalidRouteNameException;
 use john\frame\Exceptions\Route\RouteNotFoundException;
 use john\frame\Exceptions\Route\RouteNotKeyException;
@@ -31,10 +32,20 @@ class Router
     /**
      * Router constructor.
      * @param array $config
+     * @throws UndefDataException
      */
     public function __construct(array $config)
     {
         foreach ($config as $item => $value) {
+            if(!isset($value[self::PATTERN])) {
+                throw new UndefDataException("Not declared field '" . self::PATTERN . "' in config for '$item' template");
+            }
+            if(!isset($value[self::ACTION])) {
+                throw new UndefDataException("Not declared field '" . self::ACTION . "' in config for '$item' template");
+            }
+            if($this->getController($value[self::ACTION], 1) == '') {
+                throw new UndefDataException("Value of the field '" . self::ACTION . "' in config should contain '@' delimiter");
+            }
             $existed_variables = $this->getExistedVariables($value[self::PATTERN]);
             $variables = isset($value[self::VARIABLES]) ? $value[self::VARIABLES] : null;
             $this->routes[$item] = [
@@ -56,14 +67,16 @@ class Router
     {
         $uri = $request->getData("REQUEST_URI");
         foreach ($this->routes as $route => $param) {
-            if(preg_match($param[self::REGEXP], $uri, $preg_match_array) &&
-                $request->getData("REQUEST_METHOD") == $param[self::METHOD]) {
+            if (preg_match($param[self::REGEXP], $uri, $preg_match_array) &&
+                $request->getData("REQUEST_METHOD") == $param[self::METHOD]
+            ) {
                 $preg_match_array = $this->getParams($preg_match_array, $param[self::VARIABLES]);
                 return new Route($route, $param[self::CONTROLLER_NAME], $param[self::CONTROLLER_METHOD], $preg_match_array);
             }
         }
         throw new RouteNotFoundException("Not found route in config for uri: $uri");
     }
+
     /**
      * @param string $action
      * @param int $position
@@ -71,7 +84,8 @@ class Router
      */
     private function getController(string $action, int $position = 0): string
     {
-        return explode("@", $action)[$position];
+        $string = count(explode("@", $action)) == 1 ? '' : explode("@", $action)[$position];
+        return $string;
     }
 
     /**
@@ -114,7 +128,7 @@ class Router
     private function getParams(array $preg_match_array, array $existed_variables)
     {
         $preg_match_array = array_slice($preg_match_array, 1);
-        for($i=0; $i<count($existed_variables); $i++){
+        for ($i = 0; $i < count($existed_variables); $i++) {
             $preg_match_array[$existed_variables[$i]] = $preg_match_array[$i];
             unset($preg_match_array[$i]);
         }
@@ -134,14 +148,14 @@ class Router
     {
         if (array_key_exists($route_name, $this->routes)) {
             $link = $this->routes[$route_name][self::REGEXP];
-            $link = str_replace("\\", "", substr_replace(substr_replace($link, '', strlen($link)-2, 2), '', 0, 2));
+            $link = str_replace("\\", "", substr_replace(substr_replace($link, '', strlen($link) - 2, 2), '', 0, 2));
             preg_match_all("/\(.*\)/U", $link, $keys);
             $existing_parameters = $this->routes[$route_name][self::VARIABLES];
             for ($i = 0; $i < count($existing_parameters); $i++) {
                 if (!array_key_exists($existing_parameters[$i], $params)) {
                     throw new RouteNotKeyException("Key \"$existing_parameters[$i]\" is required for route \"$route_name\"");
                 } else {
-                    $link = str_replace($keys[0][$i],$params[$existing_parameters[$i]], $link);
+                    $link = str_replace($keys[0][$i], $params[$existing_parameters[$i]], $link);
                 }
             }
         } else {

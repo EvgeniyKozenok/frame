@@ -99,7 +99,9 @@ class Request
         foreach (func_get_args() as $param) {
             !array_key_exists($param, $this->queryParams) ? : $queryData[$param] = $this->queryParams[$param];
         }
-        return func_num_args() > 0 && count($queryData) > 0 ? $this->toString($queryData) : $this->toString($this->queryParams);
+        return func_num_args() > 0 && count($queryData) > 0 ?
+            $this->toString($queryData) :
+            $this->toString($this->queryParams);
     }
 
     /**

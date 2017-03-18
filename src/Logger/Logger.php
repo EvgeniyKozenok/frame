@@ -48,7 +48,9 @@ class Logger
         if (self::$PATH == null) {
             return;
         }
-        $this->fp = fopen($this->file == null ? self::$PATH . '/' . $this->name . '.log' : self::$PATH . '/' . $this->file, 'a+');
+        $this->fp = fopen($this->file == null ?
+            self::$PATH . DIRECTORY_SEPARATOR . $this->name . '.log' :
+            self::$PATH . DIRECTORY_SEPARATOR . $this->file, 'a+');
     }
 
     /**

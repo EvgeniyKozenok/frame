@@ -19,9 +19,4 @@ class RedirectResponse extends Response
         $this->code = $code;
         $this->addHeader('Location', $redirect_uri);
     }
-    /**
-     * Send body override
-     */
-    public function sendBody(){
-    }
 }

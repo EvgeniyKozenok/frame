@@ -1,6 +1,7 @@
 <?php
 
 namespace john\frame;
+use john\frame\Exceptions\Config\ConfigException;
 use john\frame\Exceptions\Route\RouteException;
 use john\frame\Logger\Logger;
 use john\frame\Request\Request;
@@ -20,7 +21,8 @@ class Application
      * @var array
      */
     private $config = [];
-    private $log_dir = null;
+//    private $log_dir = null;
+    private $logger = '';
 
     /**
      * Application constructor.
@@ -29,8 +31,16 @@ class Application
      */
     public function __construct($config, $log_dir)
     {
-        $this->config = $config;
         $this->log_dir = $log_dir;
+        file_exists($this->log_dir) && is_dir($this->log_dir) ? : mkdir($this->log_dir);
+        Logger::$PATH = $log_dir;
+        $this->logger = Logger::getLogger('root', 'logger.log');
+        $this->config = $config;
+        if (!is_array($this->config)) {
+            $message = "Routes config not found!";
+            $this->logger->log($message);
+            die($message);
+        }
     }
 
     /**
@@ -38,14 +48,11 @@ class Application
      */
     public function start()
     {
-        if(!file_exists($this->log_dir) && !is_dir($this->log_dir))
-            mkdir($this->log_dir);
-        Logger::$PATH = $this->log_dir;
-        $logger = Logger::getLogger('root', 'logger.log');
         $request = Request::getRequest();
         try {
             $router = new Router($this->config);
             $route = $router->getRoute($request);
+            $this->debug($route);
             $route_controller = $route->getController();
             $route_method = $route->getMethod();
             if (class_exists($route_controller)) {
@@ -62,10 +69,17 @@ class Application
             $link = $router->getLink("get_one_good", ['name' => "test", 'id' => 10, 'test_param' => '123e']);
             $request->getQueryParams('test', 'title', 'aaa');
         } catch (RouteException $e) {
-            $logger->log($e->getMessage());
-            header($request->getData('SERVER_PROTOCOL') . " 404 Not Found");
-
+            echo $e->getMessage();
+            $this->logger->log($e->getMessage());
+        } catch (ConfigException $e) {
+            echo $e->getMessage();
+            $this->logger->log($e->getMessage());
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            $this->logger->log($e->getMessage());
         }
+
+
     }
 
     /**
