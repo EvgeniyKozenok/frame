@@ -4,7 +4,6 @@ namespace john\frame\Render;
 
 use Twig_Environment;
 use Twig_Loader_Filesystem;
-use john\frame\Constants\Constants;
 
 /**
  * Rendering
@@ -12,7 +11,7 @@ use john\frame\Constants\Constants;
  * Class Render
  * @package john\frame\Render
  */
-class Render extends Constants
+class Render
 {
 
     /**
@@ -26,7 +25,7 @@ class Render extends Constants
      */
     public function render(string $view, array $vars = [])
     {
-        $loader = new Twig_Loader_Filesystem(Constants::TEMPLATES_DIR);
+        $loader = new Twig_Loader_Filesystem($_SERVER['DOCUMENT_ROOT'] . '/../src/views');
         $twig = new Twig_Environment($loader, array(
             //'cache' => Constants::RENDER_CACHE_DIR,
         ));
