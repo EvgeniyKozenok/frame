@@ -65,8 +65,6 @@ class Application
                     }
                 }
             }
-            $link = $router->getLink("get_one_good", ['name' => "test", 'id' => 10, 'test_param' => '123e']);
-            $request->getQueryParams('test', 'title', 'aaa');
         } catch (RouteException $e) {
             echo $e->getMessage();
             $this->logger->log($e->getMessage());
