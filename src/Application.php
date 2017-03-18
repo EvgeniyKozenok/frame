@@ -52,7 +52,6 @@ class Application
         try {
             $router = new Router($this->config);
             $route = $router->getRoute($request);
-            $this->debug($route);
             $route_controller = $route->getController();
             $route_method = $route->getMethod();
             if (class_exists($route_controller)) {
