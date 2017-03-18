@@ -31,7 +31,6 @@ class Application
      */
     public function __construct($config, $log_dir)
     {
-        echo $_SERVER['DOCUMENT_ROOT'];
         $this->log_dir = $log_dir;
         file_exists($this->log_dir) && is_dir($this->log_dir) ? : mkdir($this->log_dir);
         Logger::$PATH = $log_dir;
