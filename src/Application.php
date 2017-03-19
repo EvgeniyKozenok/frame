@@ -3,6 +3,7 @@
 namespace john\frame;
 use john\frame\Exceptions\Config\ConfigException;
 use john\frame\Exceptions\Route\RouteException;
+use john\frame\Exceptions\Validator\ValidatorException;
 use john\frame\Logger\Logger;
 use john\frame\Request\Request;
 use john\frame\Response\Response;
@@ -71,11 +72,13 @@ class Application
         } catch (ConfigException $e) {
             echo $e->getMessage();
             $this->logger->log($e->getMessage());
-        } catch (\Exception $e) {
+        } catch (ValidatorException $e) {
+            echo $e->getMessage();
+            $this->logger->log($e->getMessage());
+        }catch (\Exception $e) {
             echo $e->getMessage();
             $this->logger->log($e->getMessage());
         }
-
 
     }
 
