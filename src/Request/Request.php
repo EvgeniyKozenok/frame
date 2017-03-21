@@ -46,10 +46,6 @@ class Request
             } else
                 $this->requestData[$param] = $value;
         }
-
-        echo "<pre>";
-        echo $this->getParameter('ok');
-        die();
     }
 
     private function __clone()
@@ -58,12 +54,6 @@ class Request
 
     private function __wakeup()
     {
-    }
-
-    public function getParameter($name)
-    {
-        var_dump($_REQUEST);
-        return $name;
     }
 
     /**

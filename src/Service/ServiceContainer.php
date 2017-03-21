@@ -13,7 +13,37 @@ class ServiceContainer
     /**
      * @var array jf services
      */
-    private static $services = [];
+    private $services = [];
+
+    private static $service = null;
+
+    /**
+     * ServiceContainer constructor.
+     */
+    private function __construct()
+    {
+    }
+
+
+    private function __clone()
+    {
+    }
+
+    private function __wakeup()
+    {
+    }
+
+    /**
+     * Returns service container
+     *
+     * @return ServiceContainer
+     */
+    public static function getService(): self
+    {
+        if (!self::$service)
+            self::$service = new self();
+        return self::$service;
+    }
 
     /**
      * Getting a specific application service
@@ -21,9 +51,9 @@ class ServiceContainer
      * @param $key
      * @return array|object
      */
-    public static function getServices($key)
+    public function getServices(string $key)
     {
-        return self::$services[$key];
+        return $this->services[$key];
     }
 
     /**
@@ -33,8 +63,8 @@ class ServiceContainer
      * @param object $service
      * @internal param array $services
      */
-    public static function setServices(string $key, $service)
+    public function setServices(string $key, $service)
     {
-        self::$services[$key] = $service;
+        $this->services[$key] = $service;
     }
 }

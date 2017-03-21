@@ -24,7 +24,8 @@ class Renderer
      */
     public function render(string $view, array $vars = [])
     {
-        $twig = ServiceContainer::getServices('twig');
+        $service = ServiceContainer::getService();
+        $twig = $service->getServices('twig');
         $template = $twig->load($view . ".html");
         $this->rendered = $template->render($vars);
     }

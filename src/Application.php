@@ -42,7 +42,7 @@ class Application
         $this->config = $config;
         if (is_array($this->config) && !is_array($this->config['routes'])) {
             $message = "Routes config not found!";
-            $this->logger->log(100, $message);
+            $this->logger->info($message);
             die($message);
         }
     }
@@ -57,7 +57,9 @@ class Application
         $twig = new Twig_Environment($loader, array(
             //'cache' => Constants::RENDER_CACHE_DIR,
         ));
-        ServiceContainer::setServices('twig', $twig);
+        $service = ServiceContainer::getService();
+        $service->setServices('twig', $twig);
+//        ServiceContainer::setServices('twig', $twig);
         try {
             $router = new Router($this->config['routes']);
             $route = $router->getRoute($request);
@@ -76,16 +78,16 @@ class Application
             }
         } catch (RouteException $e) {
             echo $e->getMessage();
-            $this->logger->log(100, $e->getMessage());
+            $this->logger->debug($e->getMessage());
         } catch (ConfigException $e) {
             echo $e->getMessage();
-            $this->logger->log(100, $e->getMessage());
+            $this->logger->debug($e->getMessage());
         } catch (ValidatorException $e) {
             echo $e->getMessage();
-            $this->logger->log(100, $e->getMessage());
+            $this->logger->debug($e->getMessage());
         }catch (\Exception $e) {
             echo $e->getMessage();
-            $this->logger->log(100, $e->getMessage());
+            $this->logger->debug($e->getMessage());
         }
 
     }

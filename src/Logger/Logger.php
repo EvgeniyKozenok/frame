@@ -133,7 +133,7 @@ class Logger
      * @param int $level
      * @param string $message
      */
-    public function log(int $level = 100, string $message)
+    private function log(int $level, string $message)
     {
         $log = "[".self::$levels[$level]."] [" . date('D M d H:i:s Y', time()) . '] ';
         $log .= $message;
