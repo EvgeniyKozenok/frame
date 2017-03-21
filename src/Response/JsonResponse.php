@@ -1,10 +1,10 @@
 <?php
 
-namespace john\frame\Response;
+namespace John\Frame\Response;
 
 /**
  * Class JsonResponse
- * @package john\frame\Response
+ * @package John\Frame\Response
  */
 class JsonResponse extends Response
 {

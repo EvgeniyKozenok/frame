@@ -1,10 +1,10 @@
 <?php
 
-namespace john\frame\Response;
+namespace John\Frame\Response;
 
 /**
  * Class RedirectResponse
- * @package john\frame\Response
+ * @package John\Frame\Response
  */
 class RedirectResponse extends Response
 {

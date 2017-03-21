@@ -1,11 +1,11 @@
 <?php
 
-namespace john\frame\Exceptions\Route;
+namespace John\Frame\Exceptions\Route;
 
 /**
  * Exception if route is not valid
  * Class RouteNotFoundException
- * @package john\frame\Exceptions
+ * @package John\Frame\Exceptions
  */
 class RouteNotFoundException extends RouteException
 {

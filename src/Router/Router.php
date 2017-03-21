@@ -1,17 +1,18 @@
 <?php
 
-namespace john\frame\Router;
+namespace John\Frame\Router;
 
 
-use john\frame\Exceptions\Config\UndefDataException;
-use john\frame\Exceptions\Route\InvalidRouteNameException;
-use john\frame\Exceptions\Route\RouteNotFoundException;
-use john\frame\Exceptions\Route\RouteNotKeyException;
-use john\frame\Request\Request;
+use John\Frame\Exceptions\Config\UndefDataException;
+use John\Frame\Exceptions\Route\InvalidRouteNameException;
+use John\Frame\Exceptions\Route\RouteNotFoundException;
+use John\Frame\Exceptions\Route\RouteNotKeyException;
+use John\Frame\Request\Request;
+use John\Frame\Validator\Validator;
 
 /**
  * Class Router
- * @package john\frame\Router
+ * @package John\Frame\Router
  */
 class Router
 {
@@ -36,25 +37,34 @@ class Router
      */
     public function __construct(array $config)
     {
-        foreach ($config as $item => $value) {
-            if(!isset($value[self::PATTERN])) {
-                throw new UndefDataException("Not declared field '" . self::PATTERN . "' in config for '$item' template");
+         $validator = new Validator($config, [
+            'config_key' => ['key_verification_rule' => [self::ACTION, self::PATTERN], 'not_start_from' => ['t', 'p']]
+//            'config_key' => ['key_verification_rule']
+        ]);
+        if($validator->validate()) {
+            foreach ($config as $item => $value) {
+                if ($this->getController($value[self::ACTION], 1) == '') {
+                    throw new UndefDataException("Value of the field '" . self::ACTION . "' in config should contain '@' delimiter");
+                }
+                $existed_variables = $this->getExistedVariables($value[self::PATTERN]);
+                $variables = isset($value[self::VARIABLES]) ? $value[self::VARIABLES] : null;
+                $this->routes[$item] = [
+                    self::REGEXP => "/" . $this->getRegexpFromRoute($value[self::PATTERN], $variables, $existed_variables) . "/",
+                    self::METHOD => isset($value[self::METHOD]) && ($value[self::METHOD] != '') ? $value[self::METHOD] : "GET",
+                    self::CONTROLLER_NAME => $this->getController($value[self::ACTION]),
+                    self::CONTROLLER_METHOD => $this->getController($value[self::ACTION], 1),
+                    self::VARIABLES => $existed_variables
+                ];
             }
-            if(!isset($value[self::ACTION])) {
-                throw new UndefDataException("Not declared field '" . self::ACTION . "' in config for '$item' template");
+        } else {
+            $array = $validator->getErrors();
+            $message = '';
+            foreach ($array as $item => $value) {
+                foreach ($value['config_key'] as $field => $string) {
+                    $message .= "$string <br />";
+                }
             }
-            if($this->getController($value[self::ACTION], 1) == '') {
-                throw new UndefDataException("Value of the field '" . self::ACTION . "' in config should contain '@' delimiter");
-            }
-            $existed_variables = $this->getExistedVariables($value[self::PATTERN]);
-            $variables = isset($value[self::VARIABLES]) ? $value[self::VARIABLES] : null;
-            $this->routes[$item] = [
-                self::REGEXP => "/" . $this->getRegexpFromRoute($value[self::PATTERN], $variables, $existed_variables) . "/",
-                self::METHOD => isset($value[self::METHOD]) && ($value[self::METHOD] != '') ? $value[self::METHOD] : "GET",
-                self::CONTROLLER_NAME => $this->getController($value[self::ACTION]),
-                self::CONTROLLER_METHOD => $this->getController($value[self::ACTION], 1),
-                self::VARIABLES => $existed_variables
-            ];
+            throw new UndefDataException($message);
         }
     }
 

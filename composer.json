@@ -1,5 +1,5 @@
 {
-    "name": "john/frame",
+    "name": "John/Frame",
     "description": "Sample FW",
     "license": "MIT",
     "authors": [
@@ -14,7 +14,7 @@
     },
     "autoload": {
       "psr-4": {
-        "john\\frame\\": "src"
+        "John\\Frame\\": "src"
       }
     }
 }

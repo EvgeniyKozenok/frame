@@ -1,11 +1,11 @@
 <?php
 
-namespace john\frame\Exceptions\Config;
+namespace John\Frame\Exceptions\Config;
 
 /**
  * Exception if not field in config
  * Class UndefVariablesException
- * @package john\frame\Exceptions\Config
+ * @package John\Frame\Exceptions\Config
  */
 class UndefDataException extends ConfigException
 {

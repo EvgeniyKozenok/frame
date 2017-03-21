@@ -1,15 +1,15 @@
 <?php
 
-namespace john\frame\Controller;
+namespace John\Frame\Controller;
 
-use john\frame\Render\Render;
-use john\frame\Response\Response;
+use John\Frame\Renderer\Renderer;
+use John\Frame\Response\Response;
 
 /**
  * Base Controller fo general properties
  *
  * Class BaseController
- * @package john\frame\Controller
+ * @package John\Frame\Controller
  */
 class BaseController
 {
@@ -19,7 +19,7 @@ class BaseController
      */
     protected $response;
     /**
-     * @var Render
+     * @var Renderer
      */
     protected $render;
 
@@ -32,7 +32,7 @@ class BaseController
     public function __construct()
     {
         $this->response = new Response();
-        $this->render = new Render();
+        $this->render = new Renderer();
     }
 
 

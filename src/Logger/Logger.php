@@ -1,18 +1,71 @@
 <?php
 
-namespace john\frame\Logger;
+namespace John\Frame\Logger;
 
 /**
  * Class Logger
- * @package john\frame\Logger
+ * @package John\Frame\Logger
  */
 class Logger
 {
+
+    /**
+     * Detailed debug information
+     */
+    const DEBUG = 100;
+    /**
+     * Interesting events
+     */
+    const INFO = 200;
+    /**
+     * Uncommon events
+     */
+    const NOTICE = 250;
+    /**
+     * Exceptional occurrences that are not errors
+     */
+    const WARNING = 300;
+    /**
+     * Runtime errors
+     */
+    const ERROR = 400;
+    /**
+     * Critical conditions
+     */
+    const CRITICAL = 500;
+    /**
+     * Action must be taken immediately
+     */
+    const ALERT = 550;
+    /**
+     * Urgent alert.
+     */
+    const EMERGENCY = 600;
+
+    /**
+     * Logging levels from syslog protocol defined in RFC 5424
+     *
+     * This is a static variable and not a constant to serve as an extension point for custom levels
+     *
+     * @var string[] $levels Logging levels with the levels as key
+     */
+    protected static $levels = [
+        self::DEBUG     => 'DEBUG',
+        self::INFO      => 'INFO',
+        self::NOTICE    => 'NOTICE',
+        self::WARNING   => 'WARNING',
+        self::ERROR     => 'ERROR',
+        self::CRITICAL  => 'CRITICAL',
+        self::ALERT     => 'ALERT',
+        self::EMERGENCY => 'EMERGENCY',
+    ];
+
     /**
      * path to log file
      * @var
      */
-    public static $PATH;
+    private static $PATH;
+
     /**
      * logger
      * @var null
@@ -38,6 +91,14 @@ class Logger
         $this->name = $name;
         $this->file = $file;
         $this->open();
+    }
+
+    /**
+     * @param $path_to_log_dir
+     */
+    public static function setPATH($path_to_log_dir)
+    {
+        self::$PATH = $path_to_log_dir;
     }
 
     /**
@@ -69,14 +130,99 @@ class Logger
 
     /**
      * write message in logger
-     * @param $message
+     * @param int $level
+     * @param string $message
      */
-    public function log(string $message)
+    public function log(int $level = 100, string $message)
     {
-        $log = '[' . date('D M d H:i:s Y', time()) . '] ';
+        $log = "[".self::$levels[$level]."] [" . date('D M d H:i:s Y', time()) . '] ';
         $log .= $message;
         $log .= "\n";
         fwrite($this->fp, $log);
+    }
+
+    /**
+     * Gets all supported logging levels.
+     *
+     * @return array Assoc array with human-readable level names => level codes.
+     */
+    public static function getLevels(): array
+    {
+        return array_flip(static::$levels);
+    }
+
+    /**
+     * Adds a log record at the DEBUG level.
+     *
+     * @param string $message The log message
+     */
+    public function debug($message)
+    {
+        $this->log(static::DEBUG, (string) $message);
+    }
+    /**
+     * Adds a log record at the INFO level.
+     *
+     * @param string $message The log message
+     */
+    public function info($message)
+    {
+        $this->log(static::INFO, (string) $message);
+    }
+    /**
+     * Adds a log record at the NOTICE level.
+     *
+     * @param string $message The log message
+     */
+    public function notice($message)
+    {
+        $this->log(static::NOTICE, (string) $message);
+    }
+    /**
+     * Adds a log record at the WARNING level.
+     *
+     * @param string $message The log message
+     */
+    public function warning($message)
+    {
+        $this->log(static::WARNING, (string) $message);
+    }
+    /**
+     * Adds a log record at the ERROR level.
+     *
+     * @param string $message The log message
+     */
+    public function error($message)
+    {
+        $this->log(static::ERROR, (string) $message);
+    }
+    /**
+     * Adds a log record at the CRITICAL level.
+     *
+     *
+     * @param string $message The log message
+     */
+    public function critical($message)
+    {
+        $this->log(static::CRITICAL, (string) $message);
+    }
+    /**
+     * Adds a log record at the ALERT level.
+     *
+     * @param string $message The log message
+     */
+    public function alert($message)
+    {
+        $this->log(static::ALERT, (string) $message);
+    }
+    /**
+     * Adds a log record at the EMERGENCY level.
+     *
+     * @param string $message The log message
+     */
+    public function emergency($message)
+    {
+        $this->log(static::EMERGENCY, (string) $message);
     }
 
     /**
