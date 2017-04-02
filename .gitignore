@@ -1,0 +1,9 @@
+.idea/
+*.temp
+public/
+config/
+vendor/
+logs/
+TestController/
+views/
+cache/
