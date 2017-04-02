@@ -1,17 +1,21 @@
 <?php
 
-namespace john\frame;
-use john\frame\Exceptions\Config\ConfigException;
-use john\frame\Exceptions\Route\RouteException;
-use john\frame\Exceptions\Validator\ValidatorException;
-use john\frame\Logger\Logger;
-use john\frame\Request\Request;
-use john\frame\Response\Response;
-use john\frame\Router\Router;
+namespace John\Frame;
+use John\Frame\Exceptions\Config\ConfigException;
+use John\Frame\Exceptions\Route\RouteException;
+use John\Frame\Exceptions\Validator\ValidatorException;
+use John\Frame\Logger\Logger;
+use John\Frame\Request\Request;
+use John\Frame\Response\Response;
+use John\Frame\Router\Router;
+use John\Frame\Service\ServiceContainer;
+use Twig_Environment;
+use Twig_Loader_Filesystem;
+
 
 /**
  * Class Application
- * @package john\frame
+ * @package John\Frame
  */
 class Application
 {
@@ -22,7 +26,7 @@ class Application
      * @var array
      */
     private $config = [];
-//    private $log_dir = null;
+    private $log_dir = null;
     private $logger = '';
 
     /**
@@ -34,12 +38,12 @@ class Application
     {
         $this->log_dir = $log_dir;
         file_exists($this->log_dir) && is_dir($this->log_dir) ? : mkdir($this->log_dir);
-        Logger::$PATH = $log_dir;
+        Logger::setPATH($log_dir);
         $this->logger = Logger::getLogger('root', 'logger.log');
         $this->config = $config;
-        if (!is_array($this->config)) {
+        if (is_array($this->config) && !is_array($this->config['routes'])) {
             $message = "Routes config not found!";
-            $this->logger->log($message);
+            $this->logger->info($message);
             die($message);
         }
     }
@@ -50,8 +54,14 @@ class Application
     public function start()
     {
         $request = Request::getRequest();
+        $loader = new Twig_Loader_Filesystem($_SERVER['DOCUMENT_ROOT'] . '/../src/views');
+        $twig = new Twig_Environment($loader, array(
+            //'cache' => Constants::RENDER_CACHE_DIR,
+        ));
+        $service = ServiceContainer::getService();
+        $service->setServices('twig', $twig);
         try {
-            $router = new Router($this->config);
+            $router = new Router($this->config['routes']);
             $route = $router->getRoute($request);
             $route_controller = $route->getController();
             $route_method = $route->getMethod();
@@ -68,16 +78,13 @@ class Application
             }
         } catch (RouteException $e) {
             echo $e->getMessage();
-            $this->logger->log($e->getMessage());
-        } catch (ConfigException $e) {
-            echo $e->getMessage();
-            $this->logger->log($e->getMessage());
+            $this->logger->debug($e->getMessage());
         } catch (ValidatorException $e) {
             echo $e->getMessage();
-            $this->logger->log($e->getMessage());
+            $this->logger->debug($e->getMessage());
         }catch (\Exception $e) {
             echo $e->getMessage();
-            $this->logger->log($e->getMessage());
+            $this->logger->debug($e->getMessage());
         }
 
     }
@@ -89,16 +96,4 @@ class Application
     {
         // TODO
     }
-
-    /**
-     * Application help function debug
-     * @param $o - object
-     */
-    private function debug($o)
-    {
-        echo "<pre>";
-        print_r($o);
-        echo "</pre>";
-    }
-
 }

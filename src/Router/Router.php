@@ -1,18 +1,17 @@
 <?php
 
-namespace john\frame\Router;
+namespace John\Frame\Router;
 
-
-use john\frame\Exceptions\Config\UndefDataException;
-use john\frame\Exceptions\Route\InvalidRouteNameException;
-use john\frame\Exceptions\Route\RouteNotFoundException;
-use john\frame\Exceptions\Route\RouteNotKeyException;
-use john\frame\Request\Request;
-use john\frame\Validator\Validator;
+use John\Frame\Exceptions\Config\UndefDataException;
+use John\Frame\Exceptions\Route\InvalidRouteNameException;
+use John\Frame\Exceptions\Route\RouteNotFoundException;
+use John\Frame\Exceptions\Route\RouteNotKeyException;
+use John\Frame\Request\Request;
+use John\Frame\Validator\Validator;
 
 /**
  * Class Router
- * @package john\frame\Router
+ * @package John\Frame\Router
  */
 class Router
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace john\frame\Request;
+namespace John\Frame\Request;
 
 /**
  * Class Request
- * @package john\frame\Request
+ * @package John\Frame\Request
  */
 class Request
 {
@@ -87,6 +87,7 @@ class Request
     {
         return $this->headers;
     }
+
 
     /**
      * Get request params

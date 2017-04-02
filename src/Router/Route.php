@@ -1,10 +1,10 @@
 <?php
 
-namespace john\frame\Router;
+namespace John\Frame\Router;
 
 /**
  * Class Route
- * @package john\frame\Router
+ * @package John\Frame\Router
  */
 class Route
 {

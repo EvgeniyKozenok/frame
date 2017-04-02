@@ -1,12 +1,12 @@
 <?php
 
-namespace john\frame\Exceptions\Route;
+namespace John\Frame\Exceptions\Route;
 
 /**
  * Exception if key in route is not valid
  *
  * Class RouteNotKeyException
- * @package john\frame\Exceptions\Route
+ * @package John\Frame\Exceptions\Route
  */
 class RouteNotKeyException extends RouteException
 {

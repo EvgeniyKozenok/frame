@@ -1,11 +1,11 @@
 <?php
 
-namespace john\frame\Exceptions\Config;
+namespace John\Frame\Exceptions\Config;
 
 /**
  * Exception for config
  * Class ConfigException
- * @package john\frame\Exceptions\Config
+ * @package John\Frame\Exceptions\Config
  */
 class ConfigException extends \Exception
 {
