@@ -12,6 +12,7 @@ use John\Frame\Service\ServiceContainer;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 
+
 /**
  * Class Application
  * @package John\Frame
@@ -59,7 +60,6 @@ class Application
         ));
         $service = ServiceContainer::getService();
         $service->setServices('twig', $twig);
-//        ServiceContainer::setServices('twig', $twig);
         try {
             $router = new Router($this->config['routes']);
             $route = $router->getRoute($request);
@@ -77,9 +77,6 @@ class Application
                 }
             }
         } catch (RouteException $e) {
-            echo $e->getMessage();
-            $this->logger->debug($e->getMessage());
-        } catch (ConfigException $e) {
             echo $e->getMessage();
             $this->logger->debug($e->getMessage());
         } catch (ValidatorException $e) {
