@@ -1,7 +1,6 @@
 <?php
 
 namespace John\Frame;
-use John\Frame\Exceptions\Config\ConfigException;
 use John\Frame\Exceptions\Route\RouteException;
 use John\Frame\Exceptions\Validator\ValidatorException;
 use John\Frame\Logger\Logger;

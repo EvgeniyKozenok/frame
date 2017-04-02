@@ -1,12 +1,12 @@
 <?php
 
-namespace john\frame\Validator\ValidatorRules;
+namespace John\Frame\Validator\ValidatorRules;
 
 /**
  * Rule fo not start from some parameter
  *
  * Class NotStartFromRule
- * @package john\frame\Validator\ValidatorRules
+ * @package John\Frame\Validator\ValidatorRules
  */
 class NotStartFromRule extends BaseRule
 {

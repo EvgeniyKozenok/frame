@@ -1,11 +1,11 @@
 <?php
 
-namespace john\frame\Validator;
+namespace John\Frame\Validator;
 
-use john\frame\Exceptions\Validator\ValidationClassNotFoundException;
-use john\frame\Exceptions\Validator\ValidationRuleNotFoundException;
-use john\frame\Exceptions\Validator\WrongValidationDataException;
-use john\frame\Validator\ValidatorRules\BaseRule;
+use John\Frame\Exceptions\Validator\ValidationClassNotFoundException;
+use John\Frame\Exceptions\Validator\ValidationRuleNotFoundException;
+use John\Frame\Exceptions\Validator\WrongValidationDataException;
+use John\Frame\Validator\ValidatorRules\BaseRule;
 
 /**
  * Validate all kind of data
@@ -16,7 +16,7 @@ use john\frame\Validator\ValidatorRules\BaseRule;
 class Validator
 {
 
-    const RULES_DIR = 'john\\frame\\Validator\\ValidatorRules\\';
+    const RULES_DIR = 'John\\Frame\\Validator\\ValidatorRules\\';
     /**
      * @var object validation
      */

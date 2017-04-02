@@ -1,12 +1,12 @@
 <?php
 
-namespace john\frame\Validator\ValidatorRules;
+namespace John\Frame\Validator\ValidatorRules;
 
 /**
  * Rule for validate config field
  *
  * Class ExpectedConfigKeyRule
- * @package john\frame\Validator\ValidatorRules
+ * @package John\Frame\Validator\ValidatorRules
  */
 class ExpectedConfigKeyRule extends BaseRule
 {

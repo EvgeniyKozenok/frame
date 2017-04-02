@@ -1,10 +1,10 @@
 <?php
 
-namespace john\frame\Validator\ValidatorRules;
+namespace John\Frame\Validator\ValidatorRules;
 
 /**
  * Class BaseRule
- * @package john\frame\Validator\ValidatorRules
+ * @package John\Frame\Validator\ValidatorRules
  */
 abstract class BaseRule
 {

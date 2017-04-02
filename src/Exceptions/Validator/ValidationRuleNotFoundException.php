@@ -1,13 +1,13 @@
 <?php
 
 
-namespace john\frame\Exceptions\Validator;
+namespace John\Frame\Exceptions\Validator;
 
 /**
  * Exception if not found rule for validation
  *
  * Class ValidationRuleNotFoundException
- * @package john\frame\Exceptions\Validator
+ * @package John\Frame\Exceptions\Validator
  */
 class ValidationRuleNotFoundException extends ValidatorException
 {

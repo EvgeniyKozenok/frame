@@ -1,12 +1,12 @@
 <?php
 
-namespace john\frame\Exceptions\Validator;
+namespace John\Frame\Exceptions\Validator;
 
 /**
  * Exception for validator
  *
  * Class ValidatorException
- * @package john\frame\Exceptions\Validator
+ * @package John\Frame\Exceptions\Validator
  */
 class ValidatorException extends \Exception
 {
