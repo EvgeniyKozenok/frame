@@ -1,5 +1,6 @@
 .idea/
 *.temp
+composer.lock
 public/
 config/
 vendor/
