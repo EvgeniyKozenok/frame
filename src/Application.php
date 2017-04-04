@@ -1,7 +1,6 @@
 <?php
 
 namespace John\Frame;
-use John\Frame\Exceptions\Config\ConfigException;
 use John\Frame\Exceptions\Route\RouteException;
 use John\Frame\Exceptions\Validator\ValidatorException;
 use John\Frame\Logger\Logger;
@@ -11,6 +10,7 @@ use John\Frame\Router\Router;
 use John\Frame\Service\ServiceContainer;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
+
 
 /**
  * Class Application
@@ -59,7 +59,6 @@ class Application
         ));
         $service = ServiceContainer::getService();
         $service->setServices('twig', $twig);
-//        ServiceContainer::setServices('twig', $twig);
         try {
             $router = new Router($this->config['routes']);
             $route = $router->getRoute($request);
@@ -77,9 +76,6 @@ class Application
                 }
             }
         } catch (RouteException $e) {
-            echo $e->getMessage();
-            $this->logger->debug($e->getMessage());
-        } catch (ConfigException $e) {
             echo $e->getMessage();
             $this->logger->debug($e->getMessage());
         } catch (ValidatorException $e) {

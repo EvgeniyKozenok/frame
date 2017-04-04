@@ -9,5 +9,4 @@ namespace John\Frame\Exceptions\Config;
  */
 class UndefDataException extends ConfigException
 {
-
 }

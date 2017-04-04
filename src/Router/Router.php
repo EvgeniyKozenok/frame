@@ -2,7 +2,6 @@
 
 namespace John\Frame\Router;
 
-
 use John\Frame\Exceptions\Config\UndefDataException;
 use John\Frame\Exceptions\Route\InvalidRouteNameException;
 use John\Frame\Exceptions\Route\RouteNotFoundException;
@@ -39,7 +38,6 @@ class Router
     {
          $validator = new Validator($config, [
             'config_key' => ['key_verification_rule' => [self::ACTION, self::PATTERN], 'not_start_from' => ['t', 'p']]
-//            'config_key' => ['key_verification_rule']
         ]);
         if($validator->validate()) {
             foreach ($config as $item => $value) {
