@@ -1,0 +1,41 @@
+html {
+    height: 100%;
+}
+body {
+    font: 14px Arial, Helvetica, sans-serif; /* Рубленый шрифт текста */
+    margin: 0; /* Отступы на странице */
+    height: 100%;
+}
+h1 {
+    font-size: 36px; /* Размер шрифта заголовка шапки */
+    margin: 0; /* Убираем отступы */
+    color: #fc6; /* Цвет текста заголовка шапки */
+}
+h2 {
+    margin-top: 0; /* Убираем отступ сверху */
+}
+.header {
+    background: #0080c0; /* Цвет фона шапки */
+    padding: 10px; /* Поля вокруг текста */
+    height: 10%;
+    text-align: center;
+}
+.sidebar {
+    float: left; /* Обтекание справа */
+    width: 15%; /* Ширина левой колонки */
+    padding: 5px; /* Поля внутри блока */
+    margin: 0; /* Значения отступа от блока */
+    height: 81%;
+}
+.content {
+    margin: 0 0 0 16%; /* Значения отступа от левого блока */
+    padding: 5px; /* Поля внутри блока */
+    height: 81%;
+}
+.footer {
+    background: #333; /* Цвет фона подвал (футера) */
+    padding: 5px; /* Поля внутри блока */
+    color: #fff; /* Цвет текста футера */
+    clear: left; /* Отменяем действие float */
+    height: 5%;
+}

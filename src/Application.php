@@ -53,7 +53,7 @@ class Application
     public function start()
     {
         $request = Request::getRequest();
-        $loader = new Twig_Loader_Filesystem($_SERVER['DOCUMENT_ROOT'] . '/../src/views');
+        $loader = new Twig_Loader_Filesystem($_SERVER['DOCUMENT_ROOT'] . '/../src/viewsApp');
         $twig = new Twig_Environment($loader, array(
             //'cache' => Constants::RENDER_CACHE_DIR,
         ));

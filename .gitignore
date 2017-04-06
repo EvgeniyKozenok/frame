@@ -1,10 +1,4 @@
 .idea/
-*.temp
-composer.lock
 public/
-config/
 vendor/
-logs/
-TestController/
-views/
-cache/
+
