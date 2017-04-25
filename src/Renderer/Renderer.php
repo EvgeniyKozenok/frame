@@ -22,7 +22,7 @@ class Renderer
      * @param string $view is path to view
      * @param array $vars variables in the view
      */
-    public function render(string $view, array $vars = [])
+    public function rend(string $view, array $vars = [])
     {
         $service = ServiceContainer::getService();
         $twig = $service->getServices('twig');
