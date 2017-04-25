@@ -55,10 +55,6 @@ class Application
         $twig = new Twig_Environment($loader, array(
             //'cache' => Constants::RENDER_CACHE_DIR,
         ));
-        echo "<pre>";
-        print_r($loader);
-        print_r($twig);
-        die();
         $service = ServiceContainer::getService();
         $service->setServices('twig', $twig);
         $service->setServices('response', $this->response = new Response());
