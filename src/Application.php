@@ -51,13 +51,14 @@ class Application
         if(array_key_exists('views', $this->config)){
             $loader->addPath( $this->config['views'] );
         }
-        echo "<pre>";
-        print_r($loader);
-        die();
         $loader->addPath(dirname(__FILE__) . '/Views/');
         $twig = new Twig_Environment($loader, array(
             //'cache' => Constants::RENDER_CACHE_DIR,
         ));
+        echo "<pre>";
+        print_r($loader);
+        print_r($twig);
+        die();
         $service = ServiceContainer::getService();
         $service->setServices('twig', $twig);
         $service->setServices('response', $this->response = new Response());
