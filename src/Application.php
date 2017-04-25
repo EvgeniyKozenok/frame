@@ -149,7 +149,7 @@ class Application
             return compact('code', 'message');
         } else {
             //@TODO: Check first if appropriate layout exists...
-           $this->renderer->rend('error/'.$code, ['code' => $code,'message' => $message]);
+           $this->renderer->rend('error/'.$code, compact('code', 'message'));
            $this->response->setContent($this->renderer->getRendered());
            return $this->response;
         }

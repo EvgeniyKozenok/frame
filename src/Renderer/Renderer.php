@@ -27,8 +27,6 @@ class Renderer
         $service = ServiceContainer::getService();
         $twig = $service->getServices('twig');
         $template = $twig->load(DIRECTORY_SEPARATOR.$view . ".html.php");
-//        echo "<pre>";
-//        print_r($vars);
         $this->rendered = $template->render($vars);
     }
 
