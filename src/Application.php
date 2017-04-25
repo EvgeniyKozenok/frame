@@ -46,10 +46,12 @@ class Application
         $this->logger = Logger::getLogger('root', 'logger.log');
         $this->config = $config;
         $this->request = Request::getRequest();
-        $loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/Views/');
+        //$loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/Views/');
+        $loader = new Twig_Loader_Filesystem();
         if(array_key_exists('views', $this->config)){
             $loader->addPath( $this->config['views'] );
         }
+        $loader->addPath(dirname(__FILE__) . '/Views/');
         $twig = new Twig_Environment($loader, array(
             //'cache' => Constants::RENDER_CACHE_DIR,
         ));
