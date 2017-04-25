@@ -20,10 +20,11 @@ class GoodController extends BaseController
      */
     public function getOneGood($id): Response
     {
-        $this->render->render('index', [
+        $this->renderer->rend('index', [
             'title' => "Good: $id",
+            'currentDate' => date('d:m:Y H:i:s')
         ]);
-        $this->response->setContent($this->render->getRendered());
+        $this->response->setContent($this->renderer->getRendered());
         return $this->response;
     }
 
@@ -36,11 +37,12 @@ class GoodController extends BaseController
      */
     public function getOneGoodWithParam($id, $name): Response
     {
-        $this->render->render('index', [
+        $this->renderer->rend('index', [
             'title' => "Good: $id",
-            'param' => $name
+            'param' => $name,
+            'currentDate' => date('d:m:Y H:i:s')
         ]);
-        $this->response->setContent($this->render->getRendered());
+        $this->response->setContent($this->renderer->getRendered());
         return $this->response;
     }
 
@@ -51,9 +53,9 @@ class GoodController extends BaseController
      */
     public function getAllGoods(): Response
     {
-        $this->render->render('index', [
+        $this->renderer->rend('index', [
             'title' => 'All Goods',
-            'currentDate' => date('d:m:Y H:i')
+            'currentDate' => date('d:m:Y H:i:s')
         ]);
         $this->response->addHeader('Cache-Control', ' no-cache, must-revalidate');
         return $this->response;
