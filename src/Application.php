@@ -1,9 +1,9 @@
 <?php
 
 namespace John\Frame;
-use John\Frame\Exceptions\Route\RouteException;
+use John\Frame\Config\Config;
+use John\Frame\DI\Injector;
 use John\Frame\Exceptions\Route\RouteNotFoundException;
-use John\Frame\Exceptions\Validator\ValidatorException;
 use John\Frame\Logger\Logger;
 use John\Frame\Renderer\Renderer;
 use John\Frame\Request\Request;
@@ -33,20 +33,30 @@ class Application
     private $logger = '';
     private $response;
     private $renderer;
+    private $request;
 
     /**
      * Application constructor.
      * @param $config
      * @param $log_dir
      */
-    public function __construct($config, $log_dir)
+    public function __construct($config = [], $log_dir)
     {
-//        echo "<pre>";
+        echo "<pre>";
+
         $this->log_dir = $log_dir;
         file_exists($this->log_dir) && is_dir($this->log_dir) ? : mkdir($this->log_dir);
         Logger::setPATH($log_dir);
         $this->logger = Logger::getLogger('root', 'logger.log');
-        $this->config = $config;
+//        $this->config = $config;
+//        $this->config = new Config($config);
+        $injector = new Injector($this->config = new Config($config));
+        $this->request = $injector->get('Request');
+        $this->request = $injector->get('Renderer');
+//        Injector::setConfig($this->config);
+
+//        print_r($this->request);
+        die();
         $this->request = Request::getRequest();
         $loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/Views/');
         if(array_key_exists('views', $this->config)){
