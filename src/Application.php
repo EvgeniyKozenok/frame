@@ -1,15 +1,14 @@
 <?php
 
 namespace John\Frame;
+use John\Frame\Config\Config;
+use John\Frame\DI\Injector;
 use John\Frame\Exceptions\Route\RouteNotFoundException;
 use John\Frame\Logger\Logger;
-use John\Frame\Renderer\Renderer;
-use John\Frame\Request\Request;
 use John\Frame\Response\JsonResponse;
 use John\Frame\Response\Response;
 use John\Frame\Router\Route;
 use John\Frame\Router\Router;
-use John\Frame\Service\ServiceContainer;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 
@@ -26,43 +25,41 @@ class Application
      * log dir
      * @var array
      */
-    private $config = [];
+    private $config;
     private $log_dir = null;
     private $logger = '';
     private $response;
     private $renderer;
+    private $request;
 
     /**
      * Application constructor.
      * @param $config
      * @param $log_dir
      */
-    public function __construct($config, $log_dir)
+    public function __construct($config = [], $log_dir)
     {
-//        echo "<pre>";
         $this->log_dir = $log_dir;
         file_exists($this->log_dir) && is_dir($this->log_dir) ? : mkdir($this->log_dir);
         Logger::setPATH($log_dir);
         $this->logger = Logger::getLogger('root', 'logger.log');
-        $this->config = $config;
-        $this->request = Request::getRequest();
-        //$loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/Views/');
-        $loader = new Twig_Loader_Filesystem();
+        $this->config = new Config($config);
+        $injector = Injector::getInjector($this->config);
+        $this->config = $this->config->getConfig();
+        $this->request = $injector->get('Request');
+        $this->response = $injector->get('Response');
+        $this->renderer = $injector->get('renderer');
+        $loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/Views/');
         if(array_key_exists('views', $this->config)){
             $loader->addPath( $this->config['views'] );
         }
-        $loader->addPath(dirname(__FILE__) . '/Views/');
         $twig = new Twig_Environment($loader, array(
             //'cache' => Constants::RENDER_CACHE_DIR,
         ));
-        $service = ServiceContainer::getService();
-        $service->setServices('twig', $twig);
-        $service->setServices('response', $this->response = new Response());
-        $service->setServices('renderer', $this->renderer = new Renderer());
+        $injector->set('twig', $twig);
         if (is_array($this->config) && !is_array($this->config['routes'])) {
             $message = "Routes config not found!";
             $this->logger->info($message);
-//            $response = $this->setError($e->getMessage(), 404);
             die($message);
         }
     }

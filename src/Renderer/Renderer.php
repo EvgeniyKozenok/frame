@@ -2,7 +2,7 @@
 
 namespace John\Frame\Renderer;
 
-use John\Frame\Service\ServiceContainer;
+use John\Frame\DI\Injector;
 
 /**
  * Rendering
@@ -24,9 +24,9 @@ class Renderer
      */
     public function rend(string $view, array $vars = [])
     {
-        $service = ServiceContainer::getService();
-        $twig = $service->getServices('twig');
-        $template = $twig->load($view . ".html.php");
+        $injector = Injector::getInjector();
+        $twig = $injector->get('twig');
+        $template = $twig->load(DIRECTORY_SEPARATOR.$view . ".html.php");
         $this->rendered = $template->render($vars);
     }
 
