@@ -15,11 +15,7 @@ class Config
      */
     public function __construct($data = [])
     {
-//        if (empty(self::$config) && !empty($data)) {
-//            $this->set($data);
-//        } else {
-            self::$config = array_merge(self::$config, $data);
-//        }
+        self::$config = array_merge(self::$config, $data);
     }
 
     /**
@@ -27,7 +23,7 @@ class Config
      *
      * @param $file
      */
-    public function loadFromFile($file)
+    public function loadFromFile(string $file)
     {
         self::$config = include($file);
     }
@@ -37,9 +33,14 @@ class Config
      *
      * @param $data
      */
-    public function set($data)
+    public function set(string $data)
     {
         self::$config = $data;
+    }
+    public static function getConfig()
+    {
+        return self::$config;
+//        return self::$config;
     }
 
     /**
@@ -49,7 +50,7 @@ class Config
      *
      * @return mixed
      */
-    public function __get($param_name)
+    public function __get(string $param_name):string
     {
         return isset(self::$config[$param_name]) ? self::$config[$param_name] : null;
     }
@@ -57,12 +58,11 @@ class Config
     /**
      * Recursive getter
      *
-     * @param $key  Key may be complex like: db.host, db.driver, etc
-     * @param $default
-     *
+     * @param Key|string $key Key may be complex like: db.host, db.driver, etc
+     * @param array|bool $default
      * @return mixed
      */
-    public function get($key = null, $default = null)
+    public function get(string $key = null, array $default = null): array
     {
         $chain = explode('.', $key);
         $node = self::$config;
@@ -81,11 +81,10 @@ class Config
     /**
      * Check if key exists
      *
-     * @param $key  Key may be complex like: db.host, db.driver, etc
-     *
+     * @param Key|string $key Key may be complex like: db.host, db.driver, etc
      * @return bool
      */
-    public function has($key): bool
+    public function has(string $key): bool
     {
         $chain = explode('.', $key);
         $node = self::$config;

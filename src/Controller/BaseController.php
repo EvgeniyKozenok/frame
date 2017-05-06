@@ -2,6 +2,7 @@
 
 namespace John\Frame\Controller;
 
+use John\Frame\DI\Injector;
 use John\Frame\Renderer\Renderer;
 use John\Frame\Response\Response;
 use John\Frame\Service\ServiceContainer;
@@ -32,9 +33,9 @@ class BaseController
      */
     public function __construct()
     {
-        $services = ServiceContainer::getService();
-        $this->response = $services->getServices('response');
-        $this->renderer = $services->getServices('renderer');
+        $injector = Injector::getInjector();
+        $this->response = $injector->get('Response');
+        $this->renderer = $injector->get('Renderer');
     }
 
 
