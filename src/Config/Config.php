@@ -37,11 +37,6 @@ class Config
     {
         self::$config = $data;
     }
-    public static function getConfig()
-    {
-        return self::$config;
-//        return self::$config;
-    }
 
     /**
      * Get config param

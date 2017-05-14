@@ -20,7 +20,10 @@ return [
         "variables" => [
             "id" => "\\d+"
         ],
-        "action" => "John\\Frame\\TestController\\GoodController@getOneGoodWithParam"
+        "action" => "John\\Frame\\TestController\\GoodController@getOneGoodWithParam",
+        "middlewares" => [
+            "availability", "actionTime", "age", "actionTime", 'test'
+        ],
     ],
     "get_all_goods" => [
         "pattern" => "/good",

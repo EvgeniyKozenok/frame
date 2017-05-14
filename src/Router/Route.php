@@ -26,18 +26,33 @@ class Route
     private $params;
 
     /**
+     * @var
+     */
+    private $checkMiddlewares;
+
+    /**
      * Route constructor.
      * @param $name
      * @param $controller
      * @param $method
      * @param $params
+     * @param $middlewares
      */
-    public function __construct($name, $controller, $method, $params)
+    public function __construct($name, $controller, $method, $params, $middlewares)
     {
         $this->name = $name;
         $this->controller = $controller;
         $this->method = $method;
         $this->params = $params;
+        $this->checkMiddlewares = $middlewares;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCheckMiddlewares()
+    {
+        return $this->checkMiddlewares;
     }
 
     /**
