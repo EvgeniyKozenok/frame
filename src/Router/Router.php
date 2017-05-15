@@ -23,6 +23,7 @@ class Router
     const CONTROLLER_NAME = "controller_name";
     const CONTROLLER_METHOD = "controller_method";
     const DEFAULT_VAR_REGEXP = "[^\/]+";
+    const MIDDLEWARES = "middlewares";
 
     /**
      * @var array
@@ -46,13 +47,14 @@ class Router
                 }
                 $existed_variables = $this->getExistedVariables($value[self::PATTERN]);
                 $variables = isset($value[self::VARIABLES]) ? $value[self::VARIABLES] : null;
-                $this->routes[$item] = [
+                $this->routes[$item] = array(
                     self::REGEXP => "/" . $this->getRegexpFromRoute($value[self::PATTERN], $variables, $existed_variables) . "/",
                     self::METHOD => isset($value[self::METHOD]) && ($value[self::METHOD] != '') ? $value[self::METHOD] : "GET",
                     self::CONTROLLER_NAME => $this->getController($value[self::ACTION]),
                     self::CONTROLLER_METHOD => $this->getController($value[self::ACTION], 1),
-                    self::VARIABLES => $existed_variables
-                ];
+                    self::VARIABLES => $existed_variables,
+                    self::MIDDLEWARES => isset($value[self::MIDDLEWARES]) ? $value[self::MIDDLEWARES] : []
+                );
             }
         } else {
             $array = $validator->getErrors();
@@ -79,7 +81,7 @@ class Router
                 $request->getData("REQUEST_METHOD") == $param[self::METHOD]
             ) {
                 $preg_match_array = $this->getParams($preg_match_array, $param[self::VARIABLES]);
-                return new Route($route, $param[self::CONTROLLER_NAME], $param[self::CONTROLLER_METHOD], $preg_match_array);
+                return new Route($route, $param[self::CONTROLLER_NAME], $param[self::CONTROLLER_METHOD], $preg_match_array, $param[self::MIDDLEWARES]);
             }
         }
         throw new RouteNotFoundException("Not found route in config for uri: $uri");
@@ -171,4 +173,5 @@ class Router
         }
         return $link;
     }
+
 }

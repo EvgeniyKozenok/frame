@@ -70,7 +70,7 @@ class Injector
      */
     public function set(String $serviceName, $service)
     {
-        self::$services[strtolower($serviceName)] = $service;
+        self::$services[strtolower( array_pop( explode("\\", $serviceName) ) )] = $service;
     }
 
     /**
