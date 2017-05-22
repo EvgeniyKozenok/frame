@@ -2,6 +2,7 @@
 
 namespace John\Frame\Controller;
 
+use John\Frame\DI\Injector;
 use John\Frame\Renderer\Renderer;
 use John\Frame\Response\Response;
 
@@ -21,7 +22,7 @@ class BaseController
     /**
      * @var Renderer
      */
-    protected $render;
+    protected $renderer;
 
     /**
      * Created render and response object
@@ -31,8 +32,9 @@ class BaseController
      */
     public function __construct()
     {
-        $this->response = new Response();
-        $this->render = new Renderer();
+        $injector = Injector::getInjector();
+        $this->response = $injector->get('Response');
+        $this->renderer = $injector->get('Renderer');
     }
 
 

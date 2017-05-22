@@ -117,4 +117,16 @@ class Request
             $str .= "$item=$value<br>";
         return $str;
     }
+
+    /**
+     * Returns true if request assumed to receive back json response
+     *
+     * @return bool
+     */
+    public function wantsJson(): bool
+    {
+        return !empty($this->getData('HTTP_X_REQUESTED_WITH'))
+                && strtolower($this->getData('HTTP_X_REQUESTED_WITH')) == 'xmlhttprequest';
+//        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+    }
 }
