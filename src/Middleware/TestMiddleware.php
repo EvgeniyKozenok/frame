@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: john
- * Date: 15.05.17
- * Time: 22:51
- */
 
 namespace John\Frame\Middleware;
 

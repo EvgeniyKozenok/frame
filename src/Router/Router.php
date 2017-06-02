@@ -2,6 +2,7 @@
 
 namespace John\Frame\Router;
 
+use John\Frame\Config\Config;
 use John\Frame\Exceptions\Config\UndefDataException;
 use John\Frame\Exceptions\Route\InvalidRouteNameException;
 use John\Frame\Exceptions\Route\RouteNotFoundException;
@@ -32,11 +33,16 @@ class Router
 
     /**
      * Router constructor.
-     * @param array $config
+     * @param Config $cng
      * @throws UndefDataException
+     * @internal param array $config
      */
-    public function __construct(array $config)
+    public function __construct(Config $cng)
+//    public function __construct(array $config)
     {
+//        var_dump($cng);
+        $config = $cng->__get('routes');
+//        var_dump($config);
          $validator = new Validator($config, [
             'config_key' => ['key_verification_rule' => [self::ACTION, self::PATTERN], 'not_start_from' => ['t', 'p']]
         ]);

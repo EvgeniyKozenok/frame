@@ -3,59 +3,84 @@
 namespace John\Frame\Middleware;
 
 use John\Frame\Config\Config;
+use John\Frame\Controller\BaseController;
 use John\Frame\DI\Injector;
 use John\Frame\Exceptions\Middleware\MiddlewareException;
 
+
 class Middleware
 {
-    protected $middlewareMaps = [];
-    protected $checkMiddlewares = [];
+    private $middlewareMaps = [];
+    private $checkMiddlewares = [];
     private $expectedTypes;
+    private $response;
 
-    public function __construct(Config $config, array $checks)
+    /**
+     * Middleware constructor.
+     * @param Config $config
+     * @param Injector $injector
+     * @param BaseController $controller
+     * @param \ReflectionMethod $method
+     * @param array $params
+     * @param array $checks
+     */
+    public function __construct(Config $config,
+                                Injector $injector,
+                                BaseController $controller,
+                                \ReflectionMethod $method,
+                                array $params,
+                                array $checks)
     {
-        if ($checks) {
-            $this->middlewareMaps = $config->get('middlewares');
-            $this->checkMiddlewares = $checks;
-            $injector = Injector::getInjector();
-            $this->expectedTypes = $this->getKeys(MiddlewareI::class);
-            $this->test($injector->get('Request'), $injector->get('response'));
-        }
+        $this->middlewareMaps = $config->__get('middlewares');
+        $this->checkMiddlewares = $checks;
+        $this->expectedTypes = $this->getKeys(MiddlewareI::class);
+        $this->test($controller, $method, $params, $injector);
     }
 
     /**
      * Checking input middleware
      *
-     * @param $request
-     * @param $response
+     * @param $controller
+     * @param $method
+     * @param $params
+     * @param $ing
      * @return mixed
      * @throws MiddlewareException
+     * @internal param $request
+     * @internal param $response
      */
-    private function test($request, $response)
+    private function test($controller, $method, $params, $ing)
     {
-        $lastNext = function () use ($response) {
-            return $response;
+        $lastNext = function () use ($controller, $method, $params) {
+            return $method->invokeArgs($controller, $params);
         };
         $previousNext = $lastNext;
-
         foreach (array_reverse($this->checkMiddlewares) as $middleName) {
-            $middleParams = explode(':', $middleName);
+            $middleParams = explode(':', array_shift($this->checkMiddlewares));
             $middleName = array_shift($middleParams);
-            $middleParams = explode(',', $middleParams[0]);
+            if ($middleParams) {
+                $middleParams = explode(',', array_shift($middleParams));
+            }
             if (array_key_exists($middleName, $this->middlewareMaps)) {
                 if (!class_exists($this->middlewareMaps[$middleName])) {
                     throw new MiddlewareException("Class '" . $this->middlewareMaps[$middleName] . "' doesn't exist!");
                 }
                 $middleware = new $this->middlewareMaps[$middleName];
-                if ($this->isValid($middleware)) {
-                    if (explode(':', $this->checkMiddlewares[0])[0] === $middleName) {
-                        return $middleware->handle($request, $previousNext, $middleParams);
-                    } else {
-                        $previousNext = function () use ($previousNext, $request, $middleware, $middleParams) {
-                            return $middleware->handle($request, $previousNext, $middleParams);
+                $wrongParameters = $this->isValid($middleware);
+                if (!$wrongParameters) {
+                    if (next($this->checkMiddlewares)) {
+                        $previousNext = function () use ($previousNext, $ing, $middleware, $middleParams, $middleName) {
+                            $response = $middleware->handle($ing->get('request'), $previousNext, $middleParams);
+                            return $response;
                         };
+                    } else {
+                        $this->response = $middleware->handle($ing->get('request'), $previousNext, $middleParams);
                     }
+                } else {
+                    throw new MiddlewareException("Wrong in '" . get_class($middleware) . "': $wrongParameters");
                 }
+            } else {
+                throw new MiddlewareException("Not found middleware class for alias name '" . $middleName . "'!");
             }
         }
     }
@@ -65,11 +90,23 @@ class Middleware
      * with type of parameters the input object
      *
      * @param $obj
-     * @return bool
+     * @return string
      */
-    private function isValid($obj): bool
+    private function isValid($obj): string
     {
-        return $this->expectedTypes === $this->getKeys($obj);
+        $result = '';
+        $actualTypes = $this->getKeys($obj);
+        $returnValue = array_shift($this->expectedTypes);
+        if (array_shift($actualTypes) != $returnValue) {
+            $result .= "Return value of middleware must be as '" . $returnValue . "'.";
+        }
+        for ($i = 0; $i < count($this->expectedTypes); $i++) {
+            if($this->expectedTypes[$i] != $actualTypes[$i]) {
+                $result .=  " " . ($i+1) . " middleware parameter must be '" . $this->expectedTypes[$i] . "' type.";
+            }
+        }
+        array_unshift($this->expectedTypes, $returnValue);
+        return $result;
     }
 
     /**
@@ -88,7 +125,7 @@ class Middleware
         $method = $reflectionClass->getMethod('handle');
         $paramsType = [];
         if ($method->hasReturnType())
-            array_push($paramsType, (string) $method->getReturnType());
+            array_push($paramsType, (string)$method->getReturnType());
         $params = $method->getParameters();
         foreach ($params as $param) {
             if ($param->hasType()) {
@@ -98,5 +135,14 @@ class Middleware
             }
         }
         return $paramsType;
+    }
+
+    /**
+     * return Response object
+     * @return mixed
+     */
+    public function getResponse()
+    {
+        return $this->response;
     }
 }

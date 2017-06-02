@@ -20,7 +20,7 @@ class GoodController extends BaseController
      */
     public function getOneGood($id): Response
     {
-        $this->renderer->rend('index', [
+        $this->renderer->rend('index', $this->injector, [
             'title' => "Good: $id",
             'currentDate' => date('d:m:Y H:i:s')
         ]);
@@ -37,7 +37,7 @@ class GoodController extends BaseController
      */
     public function getOneGoodWithParam($id, $name): Response
     {
-        $this->renderer->rend('index', [
+        $this->renderer->rend('index', $this->injector, [
             'title' => "Good: $id",
             'param' => $name,
             'currentDate' => date('d:m:Y H:i:s')
@@ -53,7 +53,7 @@ class GoodController extends BaseController
      */
     public function getAllGoods(): Response
     {
-        $this->renderer->rend('index', [
+        $this->renderer->rend('index', $this->injector, [
             'title' => 'All Goods',
             'currentDate' => date('d:m:Y H:i:s')
         ]);

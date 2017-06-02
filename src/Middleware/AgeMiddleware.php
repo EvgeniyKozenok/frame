@@ -1,20 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: john
- * Date: 15.05.17
- * Time: 22:50
- */
 
 namespace John\Frame\Middleware;
 
-
 use John\Frame\Request\Request;
+use John\Frame\Response\RedirectResponse;
 use John\Frame\Response\Response;
 
 class AgeMiddleware implements MiddlewareI
 {
-
     /**
      * @param Request $request
      * @param \Closure $next
@@ -23,6 +16,12 @@ class AgeMiddleware implements MiddlewareI
      */
     public function handle(Request $request, \Closure $next, array ...$args): Response
     {
-        return $next($request);
+        $args = array_shift($args);
+        $user = 'admin';
+        if(!in_array($user, $args))
+            return new RedirectResponse('/');
+        $response = $next($request);
+            return $response;
     }
+
 }

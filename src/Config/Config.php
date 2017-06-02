@@ -13,7 +13,7 @@ class Config
      * Config constructor.
      * @param array $data
      */
-    public function __construct($data = [])
+    public function __construct(array $data = [])
     {
         self::$config = array_merge(self::$config, $data);
     }
@@ -45,7 +45,7 @@ class Config
      *
      * @return mixed
      */
-    public function __get(string $param_name):string
+    public function __get(string $param_name)
     {
         return isset(self::$config[$param_name]) ? self::$config[$param_name] : null;
     }
@@ -92,5 +92,4 @@ class Config
         } while (!empty($chain) && !empty($node));
         return true;
     }
-
 }

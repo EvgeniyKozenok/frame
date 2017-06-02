@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: john
- * Date: 15.05.17
- * Time: 22:48
- */
 
 namespace John\Frame\Middleware;
 
@@ -14,7 +8,6 @@ use John\Frame\Response\Response;
 
 class TokenMiddleware implements MiddlewareI
 {
-
     /**
      * @param Request $request
      * @param \Closure $next
@@ -25,4 +18,5 @@ class TokenMiddleware implements MiddlewareI
     {
         return $next($request);
     }
+
 }

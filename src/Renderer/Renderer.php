@@ -20,11 +20,11 @@ class Renderer
 
     /**
      * @param string $view is path to view
+     * @param Injector $injector
      * @param array $vars variables in the view
      */
-    public function rend(string $view, array $vars = [])
+    public function rend(string $view, Injector $injector, array $vars = [])
     {
-        $injector = Injector::getInjector();
         $twig = $injector->get('twig');
         $template = $twig->load(DIRECTORY_SEPARATOR.$view . ".html.php");
         $this->rendered = $template->render($vars);

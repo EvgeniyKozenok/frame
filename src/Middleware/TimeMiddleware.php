@@ -1,20 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: john
- * Date: 15.05.17
- * Time: 22:49
- */
 
 namespace John\Frame\Middleware;
-
 
 use John\Frame\Request\Request;
 use John\Frame\Response\Response;
 
 class TimeMiddleware implements MiddlewareI
 {
-
     /**
      * @param Request $request
      * @param \Closure $next
@@ -25,4 +17,5 @@ class TimeMiddleware implements MiddlewareI
     {
         return $next($request);
     }
+
 }
