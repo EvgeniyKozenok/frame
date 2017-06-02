@@ -23,19 +23,23 @@ class BaseController
      * @var Renderer
      */
     protected $renderer;
+    /**
+     * @var Injector
+     */
+    protected $injector;
 
     /**
      * Created render and response object
      *
      * BaseController constructor.
-     * @internal param $response
+     * @param Renderer $renderer
+     * @param Response $response
+     * @param Injector $injector
      */
-    public function __construct()
+    public function __construct(Renderer $renderer, Response $response, Injector $injector)
     {
-        $injector = Injector::getInjector();
-        $this->response = $injector->get('Response');
-        $this->renderer = $injector->get('Renderer');
+        $this->response = $response;
+        $this->renderer = $renderer;
+        $this->injector = $injector;
     }
-
-
 }

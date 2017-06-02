@@ -7,6 +7,7 @@ use John\Frame\Response\Response;
 
 interface MiddlewareI
 {
+
     /**
      * @param Request $request
      * @param \Closure $next
