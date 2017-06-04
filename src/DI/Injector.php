@@ -28,13 +28,6 @@ class Injector
     private $config = [];
 
     /**
-     * Service register if it singleton
-     *
-     * @var array
-     */
-    public static $instances = [];
-
-    /**
      * @var array Service register if it some object
      */
     public static $services = [];
@@ -47,9 +40,8 @@ class Injector
     private function __construct(Config $cfg)
     {
         $this->config = $cfg;
-        $this->interface_mapping = array_change_key_case($cfg->get('services', []));
+        $this->interface_mapping = array_change_key_case($cfg->__get('services', []));
     }
-
 
     /**
      * @param Config|null $config
@@ -70,7 +62,7 @@ class Injector
      */
     public function set(String $serviceName, $service)
     {
-        self::$services[strtolower($serviceName)] = $service;
+         self::$services[$this->getClassSlug($serviceName)] = $service;
     }
 
     /**
@@ -82,8 +74,8 @@ class Injector
     public function get(String $serviceName)
     {
         $serviceName = strtolower($serviceName);
-        if (!array_key_exists($serviceName, self::$services) &&
-            !array_key_exists($serviceName, self::$instances)) {
+
+        if (!array_key_exists($serviceName, self::$services)) {
             $this->set($serviceName, $this->make($serviceName));
         }
         return self::$services[$serviceName];
@@ -100,7 +92,7 @@ class Injector
      * @internal param String $service
      * @return null|object
      */
-    public function make(string $className, $actualParams = [])
+    private function make(string $className, $actualParams = [])
     {
         if (!array_key_exists($className, $this->interface_mapping)) {
             throw new InjectorNotFoundServiceException(
@@ -119,11 +111,13 @@ class Injector
             $reflectionConstruct = $reflectionClass->getConstructor();
             while ($nextReflectionClass) {
                 $nextReflectionClass = $reflectionClass->getParentClass();
-                $nameClass = strtolower(array_pop(explode('\\', $nextReflectionClass->name)));
-                if ($nameClass) {
-                    $this->interface_mapping[$nameClass] = $nextReflectionClass->name;
-                    $reflectionClass = $nextReflectionClass;
-                    $this->get($nameClass);
+                if ($nextReflectionClass) {
+                    $nameClass = $this->getClassSlug($nextReflectionClass->name);
+                    if ($nameClass) {
+                        $this->interface_mapping[$nameClass] = $nextReflectionClass->name;
+                        $reflectionClass = $nextReflectionClass;
+                        $this->get($nameClass);
+                    }
                 }
             }
             $instance = null;
@@ -145,10 +139,10 @@ class Injector
             }
             if( $reflectionClass->hasMethod('getInstance') ) {
                 $instance = call_user_func_array([$className, 'getInstance'], $paramsSet);
-                self::$instances[array_search($className, $this->interface_mapping)] = $instance;
-            } else if ( $reflectionClass->hasMethod('get'. array_pop(explode("\\", $reflectionClass->name)))){
-                $instance = call_user_func_array([$className, 'get'. array_pop(explode("\\", $reflectionClass->name))], $paramsSet);
-                self::$instances[array_search($className, $this->interface_mapping)] = $instance;
+                self::$services[array_search($className, $this->interface_mapping)] = $instance;
+            } else if ( $reflectionClass->hasMethod('get'. $this->getClassSlug($reflectionClass->name))){
+                $instance = call_user_func_array([$className, 'get'. $this->getClassSlug($reflectionClass->name)], $paramsSet);
+                self::$services[array_search($className, $this->interface_mapping)] = $instance;
             } else {
                 $instance = $reflectionClass->newInstanceArgs($paramsSet);
             }
@@ -179,7 +173,9 @@ class Injector
      */
     private function getClassSlug(string $className): string
     {
-        return strtolower(array_pop(explode("\\", $className)));
+        $service = explode("\\", $className);
+        $service = array_pop($service);
+        return strtolower($service);
     }
 
     /**
@@ -199,7 +195,8 @@ class Injector
         $params[$name] = '';
         if ($type) {
             if (!in_array($type, self::SCALAR_TYPES)) {
-                $params[$name] = $this->make(array_pop(explode("\\", $type)));
+                $this->interface_mapping[$this->getClassSlug($type)] = $type;
+                $params[$name] = $this->make($this->getClassSlug($type));
             } else {
                 $params[$name] = $this->isDef($name, $actualParams, $default);
             }
@@ -223,10 +220,9 @@ class Injector
         if (array_key_exists($name, $actualParams)) {
             return $actualParams[$name];
         }
-        if ($default || $default === '') {
+        if ($default || empty($default)) {
             return $default;
         }
         throw new \Exception(sprintf('Unable to find value param [%s]', $name));
     }
-
 }

@@ -1,10 +1,13 @@
 <?php
 
 namespace John\Frame;
+
 use John\Frame\Config\Config;
 use John\Frame\DI\Injector;
+use John\Frame\Exceptions\Middleware\MiddlewareException;
 use John\Frame\Exceptions\Route\RouteNotFoundException;
 use John\Frame\Logger\Logger;
+use John\Frame\Middleware\Middleware;
 use John\Frame\Response\JsonResponse;
 use John\Frame\Response\Response;
 use John\Frame\Router\Route;
@@ -31,37 +34,30 @@ class Application
     private $response;
     private $renderer;
     private $request;
+    private $injector;
 
     /**
      * Application constructor.
      * @param $config
      * @param $log_dir
      */
-    public function __construct($config = [], $log_dir)
+    public function __construct(array $config, $log_dir)
     {
+//        echo "<pre>";
         $this->log_dir = $log_dir;
-        file_exists($this->log_dir) && is_dir($this->log_dir) ? : mkdir($this->log_dir);
+        file_exists($this->log_dir) && is_dir($this->log_dir) ?: mkdir($this->log_dir);
         Logger::setPATH($log_dir);
         $this->logger = Logger::getLogger('root', 'logger.log');
         $this->config = new Config($config);
-        $injector = Injector::getInjector($this->config);
-        $this->config = $this->config->getConfig();
-        $this->request = $injector->get('Request');
-        $this->response = $injector->get('Response');
-        $this->renderer = $injector->get('renderer');
+        $this->injector = Injector::getInjector($this->config);
         $loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/Views/');
-        if(array_key_exists('views', $this->config)){
-            $loader->addPath( $this->config['views'] );
+        if ($pathToUserViews = $this->config->__get('views')) {
+            $loader->addPath($pathToUserViews);
         }
         $twig = new Twig_Environment($loader, array(
-            //'cache' => Constants::RENDER_CACHE_DIR,
+//            'cache' => Constants::RENDER_CACHE_DIR,
         ));
-        $injector->set('twig', $twig);
-        if (is_array($this->config) && !is_array($this->config['routes'])) {
-            $message = "Routes config not found!";
-            $this->logger->info($message);
-            die($message);
-        }
+        $this->injector->set('twig', $twig);
     }
 
     /**
@@ -69,18 +65,23 @@ class Application
      */
     public function start()
     {
-        $router = new Router($this->config['routes']);
+        $router = $this->injector->get('router');
         try {
+            $this->request = $this->injector->get('request');
             $route = $router->getRoute($this->request);
-            if($route){
-                $this->response = $this->processRoute($route);
+            if ($route) {
+                $this->response = $this->injector->get('response');
+                $this->response = $this->processRoute($route, $route->getCheckMiddlewares());
             }
         } catch (RouteNotFoundException $e) {
+            $this->logger->debug($e->getMessage());
             $this->response = $this->setError($e->getMessage(), 404);
+        } catch (MiddlewareException $e){
             $this->logger->debug($e->getMessage());
+            $this->response = $this->setError($e->getMessage(), 404);
         } catch (\Exception $e) {
-            $this->response = $this->setError($e->getMessage(), 500);
             $this->logger->debug($e->getMessage());
+            $this->response = $this->setError($e->getMessage(), 500);
         }
         $this->prepareResponse($this->response)->send();
     }
@@ -89,19 +90,30 @@ class Application
      * Process route
      *
      * @param Route $route
+     * @param array $middleware
      * @return mixed
      * @throws \Exception
      */
-    protected function processRoute(Route $route)
+    protected function processRoute(Route $route, array $middleware)
     {
         $route_controller = $route->getController();
         if (class_exists($route_controller)) {
             $route_method = $route->getMethod();
             $reflectionClass = new \ReflectionClass($route_controller);
             if ($reflectionClass->hasMethod($route_method)) {
-                $controller = $reflectionClass->newInstance();
+                $controller = $reflectionClass->newInstance(
+                    $this->injector->get('renderer'),
+                    $this->injector->get('response'),
+                    $this->injector
+                );
                 $reflectionMethod = $reflectionClass->getMethod($route_method);
-                return $reflectionMethod->invokeArgs($controller, $route->getParams());
+                 if ($middleware) {
+                     $middle = new Middleware($this->config, $this->injector, $controller, $reflectionMethod, $route->getParams(), $middleware);
+                     $response = $middle->getResponse();
+                 } else {
+                     $response = $reflectionMethod->invokeArgs($controller, $route->getParams());
+                 }
+                return $response;
             } else {
                 throw new \Exception(sprintf('Controller method [%s] not found in [%s]', $route_method, $route_controller));
             }
@@ -116,16 +128,13 @@ class Application
      * @param   $content
      * @return  Response
      */
-    protected function prepareResponse($content):Response
+    protected function prepareResponse($content): Response
     {
-        if($content instanceof Response){
-            // Do nothing, just return:
+        if ($content instanceof Response) {
             return $content;
         }
 
-        // Otherwise...
-        if($this->request->wantsJson() || is_array($content) || is_object($content)){
-            // Deal with Json response:
+        if ($this->request->wantsJson() || is_array($content) || is_object($content)) {
             $this->response = new JsonResponse($content);
         } else {
             $this->response = new Response($content);
@@ -138,17 +147,18 @@ class Application
      * Create system error response
      *
      * @param $message
+     * @param int $code
      * @return mixed
      */
-    public function setError($message, $code = 500)
+    public function setError($message = '', $code = 500)
     {
-        if($this->request->wantsJson()){
+        if ($this->request->wantsJson()) {
             return compact('code', 'message');
         } else {
-            //@TODO: Check first if appropriate layout exists...
-           $this->renderer->rend('error/'.$code, compact('code', 'message'));
-           $this->response->setContent($this->renderer->getRendered());
-           return $this->response;
+            $this->renderer = $this->injector->get('renderer');
+            $this->renderer->rend('error/' . $code, compact('code', 'message'));
+            $this->response->setContent($this->renderer->getRendered());
+            return $this->response;
         }
     }
 

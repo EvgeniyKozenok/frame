@@ -125,8 +125,7 @@ class Request
      */
     public function wantsJson(): bool
     {
-        return !empty($this->getData('HTTP_X_REQUESTED_WITH'))
-                && strtolower($this->getData('HTTP_X_REQUESTED_WITH')) == 'xmlhttprequest';
-//        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
     }
 }
