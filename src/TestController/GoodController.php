@@ -4,6 +4,7 @@ namespace John\Frame\TestController;
 
 use John\Frame\Controller\BaseController;
 use John\Frame\Response\Response;
+use John\Frame\TestModels\GoodModel;
 
 /**
  * Class GoodController
@@ -16,34 +17,32 @@ class GoodController extends BaseController
      * Return response by some good
      *
      * @param integer $id some good
+     * @param GoodModel $model
      * @return Response
      */
-    public function getOneGood($id): Response
+    public function getOneGood($id, GoodModel $model): Response
     {
-        $this->renderer->rend('index', $this->injector, [
-            'title' => "Good: $id",
-            'currentDate' => date('d:m:Y H:i:s')
-        ]);
-        $this->response->setContent($this->renderer->getRendered());
-        return $this->response;
+        $id = 3;
+        $title = "Good: $id";
+        $this->data = compact('title', 'data');
+        return $this->getRenderer();
     }
 
     /**
      * Return response by some good with params
      *
      * @param integer $id some good
-     * @param string $name param of some good
+     * @param GoodModel $mod
      * @return Response
+     * @internal param GoodModel $model
      */
-    public function getOneGoodWithParam($id, $name): Response
+    public function getOneGoodWithParam($name, $id, GoodModel $mod): Response
     {
-        $this->renderer->rend('index', $this->injector, [
-            'title' => "Good: $id",
-            'param' => $name,
-            'currentDate' => date('d:m:Y H:i:s')
-        ]);
-        $this->response->setContent($this->renderer->getRendered());
-        return $this->response;
+
+//        $data = $mod->findOne(8);
+        $title = "Good: $id";
+        $this->data = compact('title', 'data');
+        return $this->getRenderer();
     }
 
     /**
@@ -53,12 +52,11 @@ class GoodController extends BaseController
      */
     public function getAllGoods(): Response
     {
-        $this->renderer->rend('index', $this->injector, [
+        $this->data = [
             'title' => 'All Goods',
             'currentDate' => date('d:m:Y H:i:s')
-        ]);
-        $this->response->addHeader('Cache-Control', ' no-cache, must-revalidate');
-        return $this->response;
+        ];
+        return $this->getRenderer();
     }
 
 }

@@ -62,7 +62,7 @@ class Injector
      */
     public function set(String $serviceName, $service)
     {
-         self::$services[$this->getClassSlug($serviceName)] = $service;
+        self::$services[$this->getClassSlug($serviceName)] = $service;
     }
 
     /**
@@ -73,11 +73,10 @@ class Injector
      */
     public function get(String $serviceName)
     {
-        $serviceName = strtolower($serviceName);
-
         if (!array_key_exists($serviceName, self::$services)) {
             $this->set($serviceName, $this->make($serviceName));
         }
+        $serviceName = $this->getClassSlug($serviceName);
         return self::$services[$serviceName];
     }
 
@@ -94,32 +93,13 @@ class Injector
      */
     private function make(string $className, $actualParams = [])
     {
-        if (!array_key_exists($className, $this->interface_mapping)) {
-            throw new InjectorNotFoundServiceException(
-                "Add mapping in config file for '$className' service!");
-        }
-        $className = $this->interface_mapping[$className];
-        if (!class_exists($className)) {
-            throw new InjectorNotFoundClassException(
-                "Class '$className' for service '"
-                . array_search($className, $this->interface_mapping)
-                . "' not found in app!");
+
+        if (array_key_exists($className, $this->interface_mapping)) {
+            $className = $this->interface_mapping[$className];
         }
         try {
             $reflectionClass = new \ReflectionClass($className);
-            $nextReflectionClass = $reflectionClass;
             $reflectionConstruct = $reflectionClass->getConstructor();
-            while ($nextReflectionClass) {
-                $nextReflectionClass = $reflectionClass->getParentClass();
-                if ($nextReflectionClass) {
-                    $nameClass = $this->getClassSlug($nextReflectionClass->name);
-                    if ($nameClass) {
-                        $this->interface_mapping[$nameClass] = $nextReflectionClass->name;
-                        $reflectionClass = $nextReflectionClass;
-                        $this->get($nameClass);
-                    }
-                }
-            }
             $instance = null;
             if ($reflectionConstruct) {
                 $reflectionConstructParams = $reflectionConstruct->getParameters();

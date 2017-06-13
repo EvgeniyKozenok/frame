@@ -16,6 +16,7 @@ class AgeMiddleware implements MiddlewareI
      */
     public function handle(Request $request, \Closure $next, array ...$args): Response
     {
+
         $args = array_shift($args);
         $user = 'admin';
         if(!in_array($user, $args))

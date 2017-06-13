@@ -1,2 +1,0 @@
-{{currentDate}}<br />
-{{param}}

@@ -4,8 +4,18 @@ return [
     "root" => [
         "pattern" => "/",
         "method" => "",
-        "action" => "John\\Frame\\TestController\\IndexController@index"
+        "action" => "John\\Frame\\TestController\\IndexController@index",
     ],
+    "mob_phone" => [
+        "pattern" => "/mobile",
+        "action" => "John\\Frame\\TestController\\MobileController@show",
+    ],
+
+
+
+
+
+
     "get_one_good" => [
         "pattern" => "/good/{id}",
         "method" => "GET",

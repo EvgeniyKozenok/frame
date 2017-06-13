@@ -6,6 +6,7 @@ use John\Frame\Config\Config;
 use John\Frame\Controller\BaseController;
 use John\Frame\DI\Injector;
 use John\Frame\Exceptions\Middleware\MiddlewareException;
+use John\Frame\Router\Route;
 
 
 class Middleware
@@ -43,20 +44,21 @@ class Middleware
      * @param $controller
      * @param $method
      * @param $params
-     * @param $ing
+     * @param $injector
      * @return mixed
      * @throws MiddlewareException
      * @internal param $request
      * @internal param $response
      */
-    private function test($controller, $method, $params, $ing)
+    private function test($controller, $method, $params, $injector)
     {
         $lastNext = function () use ($controller, $method, $params) {
             return $method->invokeArgs($controller, $params);
         };
         $previousNext = $lastNext;
+        $number = count($this->checkMiddlewares);
         foreach (array_reverse($this->checkMiddlewares) as $middleName) {
-            $middleParams = explode(':', array_shift($this->checkMiddlewares));
+            $middleParams = explode(':', $middleName);
             $middleName = array_shift($middleParams);
             if ($middleParams) {
                 $middleParams = explode(',', array_shift($middleParams));
@@ -68,13 +70,13 @@ class Middleware
                 $middleware = new $this->middlewareMaps[$middleName];
                 $wrongParameters = $this->isValid($middleware);
                 if (!$wrongParameters) {
-                    if (next($this->checkMiddlewares)) {
-                        $previousNext = function () use ($previousNext, $ing, $middleware, $middleParams, $middleName) {
-                            $response = $middleware->handle($ing->get('request'), $previousNext, $middleParams);
+                    if ($number-- > 1) {
+                        $previousNext = function () use ($previousNext, $injector, $middleware, $middleParams, $middleName) {
+                            $response = $middleware->handle($injector->get('request'), $previousNext, $middleParams);
                             return $response;
                         };
                     } else {
-                        $this->response = $middleware->handle($ing->get('request'), $previousNext, $middleParams);
+                        $this->response = $middleware->handle($injector->get('request'), $previousNext, $middleParams);
                     }
                 } else {
                     throw new MiddlewareException("Wrong in '" . get_class($middleware) . "': $wrongParameters");

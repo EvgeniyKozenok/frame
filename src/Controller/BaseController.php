@@ -12,7 +12,7 @@ use John\Frame\Response\Response;
  * Class BaseController
  * @package John\Frame\Controller
  */
-class BaseController
+abstract class BaseController
 {
 
     /**
@@ -42,4 +42,5 @@ class BaseController
         $this->renderer = $renderer;
         $this->injector = $injector;
     }
+
 }

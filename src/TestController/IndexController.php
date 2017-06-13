@@ -2,22 +2,22 @@
 
 namespace John\Frame\TestController;
 
-use John\Frame\Controller\BaseController;
-use John\Frame\Response\RedirectResponse;
 use John\Frame\Response\Response;
 
 /**
  * Class IndexController
  * @package John\Frame\TestController
  */
-class IndexController extends BaseController
+class IndexController extends MainController
 {
     /**
      * Index action
+     * @return Response
      */
-    public function index():Response
+    public function index(): Response
     {
-        $this->response = new RedirectResponse('/good/1');
-        return $this->response;
+        $title = 'Интернет магазин электроники, бытовой и компьютерной техники';
+        $data = compact('title');
+        return $this->getRenderer($data);
     }
 }

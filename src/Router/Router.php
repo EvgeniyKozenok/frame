@@ -38,15 +38,12 @@ class Router
      * @internal param array $config
      */
     public function __construct(Config $cng)
-//    public function __construct(array $config)
     {
-//        var_dump($cng);
         $config = $cng->__get('routes');
-//        var_dump($config);
-         $validator = new Validator($config, [
+        $validator = new Validator($config, [
             'config_key' => ['key_verification_rule' => [self::ACTION, self::PATTERN], 'not_start_from' => ['t', 'p']]
         ]);
-        if($validator->validate()) {
+        if ($validator->validate()) {
             foreach ($config as $item => $value) {
                 if ($this->getController($value[self::ACTION], 1) == '') {
                     throw new UndefDataException("Value of the field '" . self::ACTION . "' in config should contain '@' delimiter");
@@ -82,7 +79,10 @@ class Router
     public function getRoute(Request $request): Route
     {
         $uri = $request->getData("REQUEST_URI");
+        if ($uri !== '/')
+            $uri = rtrim($uri, '/');
         foreach ($this->routes as $route => $param) {
+
             if (preg_match($param[self::REGEXP], $uri, $preg_match_array) &&
                 $request->getData("REQUEST_METHOD") == $param[self::METHOD]
             ) {
@@ -168,6 +168,7 @@ class Router
             preg_match_all("/\(.*\)/U", $link, $keys);
             $existing_parameters = $this->routes[$route_name][self::VARIABLES];
             for ($i = 0; $i < count($existing_parameters); $i++) {
+//                die();
                 if (!array_key_exists($existing_parameters[$i], $params)) {
                     throw new RouteNotKeyException("Key \"$existing_parameters[$i]\" is required for route \"$route_name\"");
                 } else {
