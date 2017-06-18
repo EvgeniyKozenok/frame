@@ -57,7 +57,7 @@ class Config
      * @param array|bool $default
      * @return mixed
      */
-    public function get(string $key = null, array $default = null): array
+    public function get(string $key = null, $default = null): string
     {
         $chain = explode('.', $key);
         $node = self::$config;
@@ -92,4 +92,5 @@ class Config
         } while (!empty($chain) && !empty($node));
         return true;
     }
+
 }

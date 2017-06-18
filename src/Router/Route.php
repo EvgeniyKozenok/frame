@@ -31,21 +31,37 @@ class Route
     private $checkMiddlewares;
 
     /**
+     * uri for this route
+     */
+    private $uri;
+
+    /**
      * Route constructor.
      * @param $name
      * @param $controller
      * @param $method
      * @param $params
      * @param $middlewares
+     * @param $uri
      */
-    public function __construct($name, $controller, $method, $params, $middlewares)
+    public function __construct($name, $controller, $method, $params, $middlewares, $uri)
     {
         $this->name = $name;
         $this->controller = $controller;
         $this->method = $method;
         $this->params = $params;
         $this->checkMiddlewares = $middlewares;
+        $this->uri = $uri;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getUri()
+    {
+        return substr($this->uri,1, strlen($this->uri));
+    }
+
 
     /**
      * @return mixed
