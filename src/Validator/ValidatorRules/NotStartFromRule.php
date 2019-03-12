@@ -23,7 +23,6 @@ class NotStartFromRule extends BaseRule
                 if ($ch === $data) {
                     $this->errors[$this->validation_name][] = $this->getError($field, $data);
                     $result = false;
-
                 }
             }
         }

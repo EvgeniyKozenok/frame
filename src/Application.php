@@ -8,13 +8,12 @@ use John\Frame\Exceptions\Middleware\MiddlewareException;
 use John\Frame\Exceptions\Route\RouteNotFoundException;
 use John\Frame\Logger\Logger;
 use John\Frame\Middleware\Middleware;
+use John\Frame\Model\BaseModel;
 use John\Frame\Response\JsonResponse;
 use John\Frame\Response\Response;
 use John\Frame\Router\Route;
-use John\Frame\Router\Router;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
-
 
 /**
  * Class Application
@@ -36,6 +35,7 @@ class Application
     private $request;
     private $injector;
 
+
     /**
      * Application constructor.
      * @param $config
@@ -43,20 +43,22 @@ class Application
      */
     public function __construct(array $config, $log_dir)
     {
-//        echo "<pre>";
         $this->log_dir = $log_dir;
         file_exists($this->log_dir) && is_dir($this->log_dir) ?: mkdir($this->log_dir);
         Logger::setPATH($log_dir);
         $this->logger = Logger::getLogger('root', 'logger.log');
         $this->config = new Config($config);
         $this->injector = Injector::getInjector($this->config);
-        $loader = new Twig_Loader_Filesystem(dirname(__FILE__) . '/Views/');
+        $loader = new Twig_Loader_Filesystem();
         if ($pathToUserViews = $this->config->__get('views')) {
             $loader->addPath($pathToUserViews);
         }
-        $twig = new Twig_Environment($loader, array(
-//            'cache' => Constants::RENDER_CACHE_DIR,
+        $loader->addPath(dirname(__FILE__) . '/Views/');
+        $twig = new Twig_Environment($loader, array(//            'cache' => Constants::RENDER_CACHE_DIR,
         ));
+        $functions = $this->addTwigFunction();
+        foreach ($functions as $function)
+            $twig->addFunction($function);
         $this->injector->set('twig', $twig);
     }
 
@@ -65,18 +67,19 @@ class Application
      */
     public function start()
     {
+        session_start();
         $router = $this->injector->get('router');
         try {
             $this->request = $this->injector->get('request');
+            $this->response = $this->injector->get('response');
             $route = $router->getRoute($this->request);
             if ($route) {
-                $this->response = $this->injector->get('response');
                 $this->response = $this->processRoute($route, $route->getCheckMiddlewares());
             }
         } catch (RouteNotFoundException $e) {
             $this->logger->debug($e->getMessage());
             $this->response = $this->setError($e->getMessage(), 404);
-        } catch (MiddlewareException $e){
+        } catch (MiddlewareException $e) {
             $this->logger->debug($e->getMessage());
             $this->response = $this->setError($e->getMessage(), 404);
         } catch (\Exception $e) {
@@ -101,18 +104,30 @@ class Application
             $route_method = $route->getMethod();
             $reflectionClass = new \ReflectionClass($route_controller);
             if ($reflectionClass->hasMethod($route_method)) {
-                $controller = $reflectionClass->newInstance(
-                    $this->injector->get('renderer'),
-                    $this->injector->get('response'),
-                    $this->injector
-                );
+                $controller = $this->injector->get($route_controller);
                 $reflectionMethod = $reflectionClass->getMethod($route_method);
-                 if ($middleware) {
-                     $middle = new Middleware($this->config, $this->injector, $controller, $reflectionMethod, $route->getParams(), $middleware);
-                     $response = $middle->getResponse();
-                 } else {
-                     $response = $reflectionMethod->invokeArgs($controller, $route->getParams());
-                 }
+                $params = $reflectionMethod->getParameters();
+                $routeParam = $route->getParams();
+                foreach ($params as $param) {
+                    $paramType = $param->getType();
+                    if ($paramType) {
+                        $paramObj = $this->injector->get($paramType);
+                        if ($paramObj instanceof BaseModel) {
+                            $routeParam[$param->name] = $paramObj;
+                        }
+                    } else {
+                        $val = $routeParam[$param->name];
+                        unset($routeParam[$param->name]);
+                        $routeParam[$param->name] = $val;
+                    }
+                }
+                $controller->setRoute($route);
+                if ($middleware) {
+                    $middle = new Middleware($this->config, $this->injector, $controller, $reflectionMethod, $routeParam, $middleware);
+                    $response = $middle->getResponse();
+                } else {
+                    $response = $reflectionMethod->invokeArgs($controller, $routeParam);
+                }
                 return $response;
             } else {
                 throw new \Exception(sprintf('Controller method [%s] not found in [%s]', $route_method, $route_controller));
@@ -156,7 +171,7 @@ class Application
             return compact('code', 'message');
         } else {
             $this->renderer = $this->injector->get('renderer');
-            $this->renderer->rend('error/' . $code, compact('code', 'message'));
+            $this->renderer->rend($this->injector, $code,  "error", compact('code', 'message'));
             $this->response->setContent($this->renderer->getRendered());
             return $this->response;
         }
@@ -168,5 +183,22 @@ class Application
     public function __destruct()
     {
         // TODO
+    }
+
+    /**
+     * add global function for twig
+     */
+    private function addTwigFunction()
+    {
+        return [
+             new \Twig_Function('route', function ($routeName, $array = []){
+                $router = $this->injector->get('router');
+                $params = [];
+                for($i=0; $i < count($array); $i++) {
+                    $params[$array[$i]] = $array[++$i];
+                }
+                return $router->getLink($routeName, $params);
+            })
+        ];
     }
 }

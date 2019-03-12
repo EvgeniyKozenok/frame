@@ -35,7 +35,10 @@ class Validator
      */
     private static $know_validated_rule = [
         'key_verification_rule' => self::RULES_DIR . 'ExpectedConfigKeyRule',
-        'not_start_from' => self::RULES_DIR . 'NotStartFromRule'
+        'not_start_from' => self::RULES_DIR . 'NotStartFromRule',
+        'numeric_rule' => self::RULES_DIR . 'NumericRule',
+        'require' => self::RULES_DIR . 'RequireRule',
+        'equal' => self::RULES_DIR . 'EquelRule',
     ];
 
     /**
@@ -110,7 +113,7 @@ class Validator
         if (is_numeric($name)) {
             $function = debug_backtrace()[2]['function'];
             $class = debug_backtrace()[2]['class'];
-            $string = "Array of verify data not valid in method '$function()' of class '$class'! Form of array verify data must be as: ['validation_name' => ['validation_rule' => ['param1', ..., 'paramN']]";
+            $string = "Array of verify data not valid in method '$function()' of class '$class'! Form of array verify data must be as:(object, ['validation_name' => ['validation_rule' => ['param1', ..., 'paramN']])";
         }
         return $string;
     }
